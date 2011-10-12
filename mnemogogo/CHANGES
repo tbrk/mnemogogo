@@ -2,6 +2,10 @@
 * Changes in the HexCsv library:
   - Fix a bug in the logging of next_interval values: they should be printed
     as integers and not floats.
+  - Fix the sorted order of the revisision key in 'learn ahead' mode.
+    Previously it has been sorted by (next_rep - last_rep), but it should be
+    sorted by next_rep (thanks to Stephen Holly for noticing the strange
+    behaviour of 'learn ahead').
 
 20110707 mnemogogo-1.2.6
 * Changes in the HexCsv library:

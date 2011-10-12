@@ -122,6 +122,27 @@ class RevQueue {
         }
     }
 
+    private void sortScheduledLearnAhead()
+    {
+        int i, j;
+        Card c;
+        long key;
+
+        for (i=1; i < num_scheduled; ++i) {
+            c = q[i];
+            key = c.sortKey();
+
+            for (j=i-1; j >= 0 && q[j].sortKey() > key; --j) {
+                q[j + 1] = q[j];
+            }
+            q[j + 1] = c;
+
+            if (i % 10 == 0 && progress != null) {
+                progress.updateOperation(10);
+            }
+        }
+    }
+
     private void shuffle(int first, int max)
     {
         for (int i=first; i < max; ++i) {
@@ -275,10 +296,15 @@ class RevQueue {
         }
 
         if (num_scheduled > 0) {
-            if (config.sorting() || learn_ahead) {
+            if (config.sorting()) {
                 sortScheduled();
+
+            } else if (learn_ahead) {
+                sortScheduledLearnAhead();
+
             } else {
                 shuffle(0, num_scheduled);
+
             }
         } else {
             rebuildNewQueue();

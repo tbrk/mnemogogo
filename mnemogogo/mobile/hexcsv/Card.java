@@ -117,6 +117,10 @@ public class Card
         return (next_rep - last_rep);
     }
 
+    public long sortKey() {
+        return next_rep;
+    }
+
     public int repetitions() {
         return (acq_reps + ret_reps);
     }
