@@ -78,9 +78,17 @@ class MnemogogoPlugin(Plugin):
         self.gogo_dlg.exec_loop()
         self.settings = self.gogo_dlg.settings
 
-        if self.settings['mode'] == 'mobile':
-            self.lock()
-        else:
+        try:
+            if self.settings['mode'] == 'mobile':
+                self.lock()
+            else:
+                self.unlock()
+        except KeyError:
+            self.show_error("Missing state."
+                + "Mnemogogo could not determine whether it should "
+                + " be in local or mobile mode. Please use the "
+                + "'Force to Mobile' and 'Force to Local' buttons to "
+                + "establish the correct state.")
             self.unlock()
 
         self.main_dlg.updateDialog()
