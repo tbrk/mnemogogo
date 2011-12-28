@@ -1,884 +1,587 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>GogoFrm</class>
-<widget class="QDialog">
-    <property name="name">
-        <cstring>GogoFrm</cstring>
-    </property>
-    <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>572</width>
-            <height>365</height>
-        </rect>
-    </property>
-    <property name="caption">
-        <string>Mnemogogo</string>
-    </property>
-    <property name="sizeGripEnabled">
-        <bool>true</bool>
-    </property>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>Layout1</cstring>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GogoFrm</class>
+ <widget class="QDialog" name="GogoFrm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>572</width>
+    <height>365</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Mnemogogo</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>550</width>
+     <height>310</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="synchronizeTab">
+    <attribute name="title">
+     <string>Synchronize</string>
+    </attribute>
+    <widget class="QFrame" name="localFrame">
+     <property name="geometry">
+      <rect>
+       <x>24</x>
+       <y>11</y>
+       <width>176</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>326</y>
-                <width>546</width>
-                <height>31</height>
-            </rect>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>95</height>
+         </size>
         </property>
-        <hbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <property name="margin">
-                <number>0</number>
-            </property>
-            <property name="spacing">
-                <number>6</number>
-            </property>
-            <spacer>
-                <property name="name">
-                    <cstring>Horizontal Spacing2</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>20</width>
-                        <height>20</height>
-                    </size>
-                </property>
-            </spacer>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>doneButton</cstring>
-                </property>
-                <property name="text">
-                    <string>&amp;Done</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+D</string>
-                </property>
-                <property name="autoDefault">
-                    <bool>true</bool>
-                </property>
-                <property name="default">
-                    <bool>true</bool>
-                </property>
-            </widget>
-        </hbox>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>31</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="localLabel">
+        <property name="text">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot;font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Local&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>32</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>94</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </widget>
-    <widget class="QTabWidget">
-        <property name="name">
-            <cstring>tabWidget</cstring>
+    <widget class="QFrame" name="mobileFrame">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>11</y>
+       <width>192</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>550</width>
-                <height>310</height>
-            </rect>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>95</height>
+         </size>
         </property>
-        <widget class="QWidget">
-            <property name="name">
-                <cstring>synchronizeTab</cstring>
-            </property>
-            <attribute name="title">
-                <string>Synchronize</string>
-            </attribute>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer7_2_3</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>16</width>
-                        <height>21</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>131</y>
-                        <width>16</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-            </spacer>
-            <widget class="QFrame">
-                <property name="name">
-                    <cstring>localFrame</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>24</x>
-                        <y>11</y>
-                        <width>176</width>
-                        <height>261</height>
-                    </rect>
-                </property>
-                <property name="paletteBackgroundColor">
-                    <color>
-                        <red>0</red>
-                        <green>170</green>
-                        <blue>0</blue>
-                    </color>
-                </property>
-                <property name="frameShape">
-                    <enum>StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Sunken</enum>
-                </property>
-                <grid>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <spacer row="0" column="1">
-                        <property name="name">
-                            <cstring>spacer4</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="2" column="1">
-                        <property name="name">
-                            <cstring>spacer4_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="1" column="0">
-                        <property name="name">
-                            <cstring>spacer15</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>40</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="1" column="2">
-                        <property name="name">
-                            <cstring>spacer15_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>40</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QLabel" row="1" column="1">
-                        <property name="name">
-                            <cstring>localLabel</cstring>
-                        </property>
-                        <property name="paletteForegroundColor">
-                            <color>
-                                <red>255</red>
-                                <green>255</green>
-                                <blue>255</blue>
-                            </color>
-                        </property>
-                        <property name="text">
-                            <string>&lt;p align="center"&gt;&lt;font size="+3"&gt;&lt;b&gt;Local&lt;/b&gt;&lt;/font&gt;&lt;/p&gt;</string>
-                        </property>
-                    </widget>
-                </grid>
-            </widget>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer7</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>16</width>
-                        <height>21</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>206</x>
-                        <y>131</y>
-                        <width>16</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-            </spacer>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer7_2</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>16</width>
-                        <height>21</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>317</x>
-                        <y>131</y>
-                        <width>16</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-            </spacer>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer7_2_3_2</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>16</width>
-                        <height>21</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>528</x>
-                        <y>131</y>
-                        <width>16</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-            </spacer>
-            <widget class="QFrame">
-                <property name="name">
-                    <cstring>mobileFrame</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>330</x>
-                        <y>11</y>
-                        <width>192</width>
-                        <height>261</height>
-                    </rect>
-                </property>
-                <property name="frameShape">
-                    <enum>StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Sunken</enum>
-                </property>
-                <grid>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <spacer row="0" column="1">
-                        <property name="name">
-                            <cstring>spacer4_3</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="2" column="1">
-                        <property name="name">
-                            <cstring>spacer4_2_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="1" column="0">
-                        <property name="name">
-                            <cstring>spacer17</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>40</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <spacer row="1" column="2">
-                        <property name="name">
-                            <cstring>spacer17_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>40</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QLabel" row="1" column="1">
-                        <property name="name">
-                            <cstring>mobileLabel</cstring>
-                        </property>
-                        <property name="paletteForegroundColor">
-                            <color>
-                                <red>124</red>
-                                <green>124</green>
-                                <blue>124</blue>
-                            </color>
-                        </property>
-                        <property name="text">
-                            <string>&lt;p align="center"&gt;&lt;font size="+3"&gt;&lt;b&gt;Mobile&lt;/b&gt;&lt;/font&gt;&lt;/p&gt;</string>
-                        </property>
-                    </widget>
-                </grid>
-            </widget>
-            <widget class="QButtonGroup">
-                <property name="name">
-                    <cstring>buttonGroup1</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>10</y>
-                        <width>109</width>
-                        <height>257</height>
-                    </rect>
-                </property>
-                <property name="frameShape">
-                    <enum>NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Plain</enum>
-                </property>
-                <property name="title">
-                    <string></string>
-                </property>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer11</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>exportButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>&amp;Export &gt;&gt;</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+E</string>
-                        </property>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer11_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QProgressBar">
-                        <property name="name">
-                            <cstring>progressBar</cstring>
-                        </property>
-                        <property name="paletteForegroundColor">
-                            <color>
-                                <red>0</red>
-                                <green>170</green>
-                                <blue>0</blue>
-                            </color>
-                        </property>
-                        <property name="progress">
-                            <number>0</number>
-                        </property>
-                        <property name="centerIndicator">
-                            <bool>true</bool>
-                        </property>
-                        <property name="percentageVisible">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer11_2_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>importButton</cstring>
-                        </property>
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
-                        <property name="text">
-                            <string>&lt;&lt; &amp;Import</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+I</string>
-                        </property>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer11_2_2_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </vbox>
-            </widget>
-        </widget>
-        <widget class="QWidget">
-            <property name="name">
-                <cstring>optionsTab</cstring>
-            </property>
-            <attribute name="title">
-                <string>Options</string>
-            </attribute>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel2</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>11</y>
-                        <width>175</width>
-                        <height>24</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Number of days to export:</string>
-                </property>
-            </widget>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel4</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>80</y>
-                        <width>175</width>
-                        <height>24</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Interface:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox">
-                <property name="name">
-                    <cstring>interfaceList</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>192</x>
-                        <y>80</y>
-                        <width>343</width>
-                        <height>24</height>
-                    </rect>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>browseButton</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>449</x>
-                        <y>41</y>
-                        <width>86</width>
-                        <height>33</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&amp;Browse</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+B</string>
-                </property>
-            </widget>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer28</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>40</width>
-                        <height>20</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>244</x>
-                        <y>13</y>
-                        <width>199</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-            </spacer>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>forceLocalButton</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>235</y>
-                        <width>119</width>
-                        <height>33</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Force to Local</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>forceMobileButton</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>196</y>
-                        <width>119</width>
-                        <height>33</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Force to Mobile</string>
-                </property>
-            </widget>
-            <widget class="QLineEdit">
-                <property name="name">
-                    <cstring>syncPath</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>192</x>
-                        <y>45</y>
-                        <width>251</width>
-                        <height>24</height>
-                    </rect>
-                </property>
-            </widget>
-            <widget class="QSpinBox">
-                <property name="name">
-                    <cstring>daysToExport</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>192</x>
-                        <y>11</y>
-                        <width>46</width>
-                        <height>24</height>
-                    </rect>
-                </property>
-            </widget>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel3</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>11</x>
-                        <y>41</y>
-                        <width>175</width>
-                        <height>33</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Synchronization path:</string>
-                </property>
-            </widget>
-            <widget class="QButtonGroup">
-                <property name="name">
-                    <cstring>imageProperties</cstring>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>270</x>
-                        <y>130</y>
-                        <width>176</width>
-                        <height>118</height>
-                    </rect>
-                </property>
-                <property name="title">
-                    <string>Exported image limits</string>
-                </property>
-                <grid>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QSpinBox" row="0" column="1">
-                        <property name="name">
-                            <cstring>maxWidth</cstring>
-                        </property>
-                        <property name="maxValue">
-                            <number>1024</number>
-                        </property>
-                        <property name="minValue">
-                            <number>32</number>
-                        </property>
-                        <property name="value">
-                            <number>240</number>
-                        </property>
-                    </widget>
-                    <widget class="QSpinBox" row="1" column="1">
-                        <property name="name">
-                            <cstring>maxHeight</cstring>
-                        </property>
-                        <property name="maxValue">
-                            <number>1024</number>
-                        </property>
-                        <property name="minValue">
-                            <number>32</number>
-                        </property>
-                        <property name="value">
-                            <number>300</number>
-                        </property>
-                    </widget>
-                    <widget class="QSpinBox" row="2" column="1">
-                        <property name="name">
-                            <cstring>maxSize</cstring>
-                        </property>
-                        <property name="maxValue">
-                            <number>256</number>
-                        </property>
-                        <property name="minValue">
-                            <number>16</number>
-                        </property>
-                        <property name="value">
-                            <number>64</number>
-                        </property>
-                    </widget>
-                    <widget class="QLabel" row="2" column="0">
-                        <property name="name">
-                            <cstring>maxSize_label</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Size (Kb):</string>
-                        </property>
-                    </widget>
-                    <widget class="QLabel" row="1" column="0">
-                        <property name="name">
-                            <cstring>maxHeight_label</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Height:</string>
-                        </property>
-                    </widget>
-                    <widget class="QLabel" row="0" column="0">
-                        <property name="name">
-                            <cstring>maxWidth_label</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Width:</string>
-                        </property>
-                    </widget>
-                </grid>
-            </widget>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer23</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>130</width>
-                        <height>20</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>136</x>
-                        <y>222</y>
-                        <width>130</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-            </spacer>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer23_2</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>90</width>
-                        <height>20</height>
-                    </size>
-                </property>
-                <property name="geometry">
-                    <rect>
-                        <x>450</x>
-                        <y>220</y>
-                        <width>90</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-            </spacer>
-        </widget>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>29</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="mobileLabel">
+        <property name="text">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot;font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Mobile&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>29</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1">
+       <spacer name="verticalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>94</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </widget>
-</widget>
-<tabstops>
-    <tabstop>doneButton</tabstop>
-    <tabstop>tabWidget</tabstop>
-    <tabstop>exportButton</tabstop>
-    <tabstop>importButton</tabstop>
-    <tabstop>daysToExport</tabstop>
-    <tabstop>syncPath</tabstop>
-    <tabstop>browseButton</tabstop>
-    <tabstop>interfaceList</tabstop>
-    <tabstop>forceMobileButton</tabstop>
-    <tabstop>forceLocalButton</tabstop>
-</tabstops>
-<layoutdefaults spacing="6" margin="11"/>
-</UI>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>10</y>
+       <width>97</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <spacer name="verticalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="exportButton">
+        <property name="text">
+         <string>&amp;Export &gt;&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="textVisible">
+         <bool>false</bool>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="format">
+         <string>%p%</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="importButton">
+        <property name="text">
+         <string>&lt;&lt; &amp;Import</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="optionsTab">
+    <attribute name="title">
+     <string>Options</string>
+    </attribute>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>11</y>
+       <width>181</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Number of days to export:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>41</y>
+       <width>175</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Synchronisation path:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>175</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Interface:</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="interfaceList">
+     <property name="geometry">
+      <rect>
+       <x>192</x>
+       <y>80</y>
+       <width>343</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="syncPath">
+     <property name="geometry">
+      <rect>
+       <x>192</x>
+       <y>45</y>
+       <width>251</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="browseButton">
+     <property name="geometry">
+      <rect>
+       <x>449</x>
+       <y>41</y>
+       <width>86</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&amp;Browse</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="daysToExport">
+     <property name="geometry">
+      <rect>
+       <x>192</x>
+       <y>11</y>
+       <width>46</width>
+       <height>24</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="forceMobileButton">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>196</y>
+       <width>119</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Force to Mobile</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="forceLocalButton">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>235</y>
+       <width>119</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Force to Local</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>130</y>
+       <width>276</width>
+       <height>118</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Exported image limits</string>
+     </property>
+     <widget class="QSpinBox" name="maxSize">
+      <property name="geometry">
+       <rect>
+        <x>95</x>
+        <y>84</y>
+        <width>72</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>16</number>
+      </property>
+      <property name="maximum">
+       <number>256</number>
+      </property>
+      <property name="value">
+       <number>64</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="maxHeight">
+      <property name="geometry">
+       <rect>
+        <x>95</x>
+        <y>55</y>
+        <width>72</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>32</number>
+      </property>
+      <property name="maximum">
+       <number>1024</number>
+      </property>
+      <property name="value">
+       <number>300</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="maxWidth">
+      <property name="geometry">
+       <rect>
+        <x>95</x>
+        <y>25</y>
+        <width>72</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>32</number>
+      </property>
+      <property name="maximum">
+       <number>1024</number>
+      </property>
+      <property name="value">
+       <number>240</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="maxSize_label">
+      <property name="geometry">
+       <rect>
+        <x>17</x>
+        <y>84</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Size (Kb):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="maxHeight_label">
+      <property name="geometry">
+       <rect>
+        <x>17</x>
+        <y>55</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Height:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="maxWidth_label">
+      <property name="geometry">
+       <rect>
+        <x>17</x>
+        <y>25</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Width:</string>
+      </property>
+     </widget>
+    </widget>
+    <zorder>groupBox</zorder>
+    <zorder>label_3</zorder>
+    <zorder>label_4</zorder>
+    <zorder>label_5</zorder>
+    <zorder>interfaceList</zorder>
+    <zorder>syncPath</zorder>
+    <zorder>browseButton</zorder>
+    <zorder>daysToExport</zorder>
+    <zorder>forceMobileButton</zorder>
+    <zorder>forceLocalButton</zorder>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>330</y>
+     <width>551</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="doneButton">
+      <property name="text">
+       <string>&amp;Done</string>
+      </property>
+      <property name="shortcut">
+       <string>Alt+D</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>exportButton</tabstop>
+  <tabstop>importButton</tabstop>
+  <tabstop>doneButton</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>daysToExport</tabstop>
+  <tabstop>browseButton</tabstop>
+  <tabstop>interfaceList</tabstop>
+  <tabstop>maxWidth</tabstop>
+  <tabstop>maxHeight</tabstop>
+  <tabstop>maxSize</tabstop>
+  <tabstop>syncPath</tabstop>
+  <tabstop>forceMobileButton</tabstop>
+  <tabstop>forceLocalButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

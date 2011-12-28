@@ -1,7 +1,7 @@
 MAKE=make
 
 gogo_frm.py: gogo_frm.ui
-	pyuic gogo_frm.ui > gogo_frm.py
+	pyuic4 gogo_frm.ui > gogo_frm.py
 
 clean:
 	-@rm *.pyc *.pyo 2>/dev/null

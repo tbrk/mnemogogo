@@ -16,8 +16,15 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-import mnemosyne.core
-import mnemosyne.pyqt_ui
+# TODO:
+# * how to handle time_of_start
+# * how to detect overlays
+# * how to get a list of upcoming cards from the scheduler
+# * how to get plain question/answer text
+# * can we rely on ids?
+# * what about when a card type changes?
+# * Add a render chain for mnemogogo
+
 import sys
 import os
 import os.path
@@ -26,11 +33,13 @@ import re
 import itertools
 import random
 import traceback
-from qt import *
+import time
+
+#from qt import *
 
 interface_classes = []
 
-read_log_file = False
+logger = None
 max_config_size = 50
 
 def phonejoin(paths):
@@ -149,14 +158,17 @@ class Export(Job):
 
     # # # Utility routines # # #
 
+    # TODO
     def is_overlay(self, text):
         r = False
         abox = mnemosyne.pyqt_ui.card_prop.card_props(text).get('answerbox')
         return (abox == 'overlay')
     
+    # TODO
     def remove_overlay(self, text):
         return mnemosyne.pyqt_ui.card_prop.re_card_props.sub('', text)
 
+    # TODO
     def call_hooks(self, target, hook):
         if hook in mnemosyne.core.function_hooks:
             for f in mnemosyne.core.function_hooks[hook]:
@@ -170,7 +182,7 @@ class Export(Job):
                 try:
                     os.remove(os.path.join(dstpath, file))
                 except:
-                    log_warning ("Could not remove: %s" % file)
+                    logger.log_warning ("Could not remove: %s" % file)
 
     def tidy_images(self, dst_subdir):
         self.tidy_files(dst_subdir, self.imgs.values())
@@ -182,7 +194,7 @@ class Export(Job):
         shutil.copy(os.path.join(self.gogo_dir, 'style.css'), dstpath)
 
     def add_active_categories(self):
-        mcats = mnemosyne.core.get_categories()
+        mcats = mnemosyne.core.get_categories() # TODO
         cats = []
         for mc in mcats:
             if mc.active:
@@ -218,7 +230,7 @@ class Export(Job):
         dst = os.path.join(self.sync_path, dst_subdir, dst_file)
 
         if not os.path.exists(src):
-            log_warning("image not found: %s" % src)
+            logger.log_warning("image not found: %s" % src)
             return (False, 'NOTFOUND.PNG')
 
         if (os.path.exists(dst) and
@@ -254,7 +266,7 @@ class Export(Job):
 
             r = im.save(tmpdst, 'PNG')
             if not r:
-                log_warning('unable to export the image: %s' % src)
+                logger.log_warning('unable to export the image: %s' % src)
                 return (True, dst_file)
 
             (nwidth, nheight) = (width, height)
@@ -341,7 +353,7 @@ class Export(Job):
                     ntext.append('<sound src="%s" />' % self.snds[src])
 
                 except IOError:
-                    log_warning("sound file not found: %s" % src)
+                    logger.log_warning("sound file not found: %s" % src)
         
         ntext.append(self.re_snd_split.sub('', text))
         return '\n'.join(ntext)
@@ -401,8 +413,7 @@ class Mnemogogo(Exception):
 
 interfaces = []
 
-def register_interfaces():
-    basedir = mnemosyne.core.get_basedir()
+def register_interfaces(basedir):
     interface_dir = unicode(os.path.join(basedir,
                             "plugins", "mnemogogo", "interface"))
     
@@ -467,16 +478,18 @@ def extra_cards(items):
 # work with for the given number of days.
 def cards_for_ndays(days = 0, extra = 1.00):
             
-    items = mnemosyne.core.get_items()
+    items = mnemosyne.core.get_items() # TODO
     random.shuffle(items)
     revision_queue = []
 
     if len(items) == 0:
         return revision_queue
 
+    # TODO
     limit = (mnemosyne.core.get_config("grade_0_items_at_once")
              * (days + 1) * extra)
 
+    # TODO
     time_of_start = mnemosyne.core.get_time_of_start()
     time_of_start.update_days_since()
     scheduled_cards = (i for i in items if i.is_due_for_retention_rep(days))
@@ -498,7 +511,7 @@ def get_fresh_id(cardid, used_ids):
     return prefix + str(suffix)
 
 def eliminate_duplicate_ids():
-    items = mnemosyne.core.get_items()
+    items = mnemosyne.core.get_items() # TODO
 
     checked = {}
     for item in items:
@@ -511,7 +524,7 @@ def eliminate_duplicate_ids():
 
         if checked[item.id]:
             newid = get_fresh_id(item.id, checked)
-            log_info ("Fixing duplicate id: %s -> %s" % (item.id, newid))
+            logger.log_info ("Fixing duplicate id: %s -> %s" % (item.id, newid))
             item.id = newid
         checked[item.id] = True
 
@@ -535,21 +548,22 @@ def stats_to_card(stats, card):
 
 def process(card, which):
     hook = "gogo_" + which
-    text = mnemosyne.core.preprocess(getattr(card, which))
-    if hook in mnemosyne.core.function_hooks:
+    text = mnemosyne.core.preprocess(getattr(card, which)) # TODO
+    if hook in mnemosyne.core.function_hooks: # TODO
         for f in mnemosyne.core.function_hooks[hook]:
             text = f(text, card)
     return text
 
 def do_export(interface, num_days, sync_path, progress_bar=None,
               extra = 1.00, max_width = 240, max_height = 300, max_size = 64):
-    basedir = mnemosyne.core.get_basedir()
+    basedir = mnemosyne.core.get_basedir() # TODO
 
     eliminate_duplicate_ids()
     exporter = interface.start_export(sync_path)
     exporter.gogo_dir = unicode(os.path.join(basedir, "plugins", "mnemogogo"))
     exporter.progress_bar = progress_bar
 
+    # TODO
     config = {
             'grade_0_items_at_once'
                 : mnemosyne.core.get_config('grade_0_items_at_once'),
@@ -566,9 +580,9 @@ def do_export(interface, num_days, sync_path, progress_bar=None,
         }
 
     cards = list(cards_for_ndays(num_days, extra))
-    cards.sort(key=mnemosyne.core.Item.sort_key_interval)
-    time_of_start = mnemosyne.core.get_time_of_start()
-    items = mnemosyne.core.get_items()
+    cards.sort(key=mnemosyne.core.Item.sort_key_interval) # TODO
+    time_of_start = mnemosyne.core.get_time_of_start() # TODO
+    items = mnemosyne.core.get_items() # TODO
 
     total = len(cards)
     current = 0
@@ -582,7 +596,7 @@ def do_export(interface, num_days, sync_path, progress_bar=None,
         q = process(card, "q")
         a = process(card, "a")
         inverses = (i.id for i in cards
-                    if mnemosyne.core.items_are_inverses(card, i))
+                    if mnemosyne.core.items_are_inverses(card, i)) # TODO
         exporter.write(card.id, q, a, card.cat.name, stats, inverses)
 
         if progress_bar:
@@ -592,12 +606,12 @@ def do_export(interface, num_days, sync_path, progress_bar=None,
 
 def adjust_start_date(import_start_date):
 
-    time_of_start = mnemosyne.core.get_time_of_start()
+    time_of_start = mnemosyne.core.get_time_of_start() # TODO
     db_start_date = time_of_start.date
     offset = (import_start_date - db_start_date).days
 
     if offset < 0:
-        log_error(
+        logger.log_error(
             "database time_of_start is later than import time_of_start!")
 
         # The database time_of_start should only ever be pushed back earlier
@@ -644,7 +658,7 @@ def do_import(interface, sync_path, progress_bar=None):
                 stats['next_rep'] += offset
             new_stats.append((card, stats))
         else:
-            log_error("Quietly ignoring card with missing id: %s" % id)
+            logger.log_error("Quietly ignoring card with missing id: %s" % id)
 
         if (progress_bar):
             progress_bar.setProgress(importer.percentage_complete)
@@ -672,11 +686,13 @@ def do_import(interface, sync_path, progress_bar=None):
         os.remove(logpath)
 
 def get_database():
-    try:
-        mempath =  mnemosyne.core.get_config("path")
-    except KeyError:
-        mempath = "default.mem"
+    # TODO: is this still necessary?
+    #try:
+        #mempath =  mnemosyne.core.get_config("path")
+    #except KeyError:
+        #mempath = "default.mem"
 
+    mempath = "default.mem"
     return mempath[:-4]
 
 def get_config_key():
@@ -689,22 +705,42 @@ def get_config_key():
 
     return config_key
 
-def log_info(msg):
-    mnemosyne.core.logger.info("mnemogogo: " + msg)
+class Logger:
+    logfile = None
+    read_logfile = False
 
-def log_warning(msg):
-    mnemosyne.core.logger.warning("mnemogogo: " + msg)
+    def __init__(self, basedir):
+        logname = os.path.join(basedir, "gogolog.txt")
 
-def log_error(msg):
-    global read_log_file
-    read_log_file = True
-    mnemosyne.core.logger.error("mnemogogo: " + msg)
+        try:
+            size = os.path.getsize(logname) 
+        except:
+            size = 0
 
-def check_log_status():
-    global read_log_file
-    return read_log_file
+        if size > 32768:
+            self.logfile = file(logname, "w")
+        else:
+            self.logfile = file(logname, "a")
 
-def clear_log_status():
-    global read_log_file
-    read_log_file = False
+    def log_info(self, msg):
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        self.logfile.flush()
+
+    def log_warning(self, msg):
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        self.logfile.flush()
+
+    def log_error(self, msg):
+        self.read_logfile = True
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        self.logfile.flush()
+
+    def check_log_status(self):
+        return self.read_logfile
+
+    def clear_log_status(self):
+        self.read_logfile = False
 

@@ -2,12 +2,12 @@
 #
 # mnemogogo.py <tim@tbrk.org>
 #
-# Mnemogogo: making mnemosyne mobile
+# Mnemogogo: making mnemosyne 2.x mobile
 #
 ##############################################################################
 
 #
-# Copyright (C) 2009 Timothy Bourke
+# Copyright (C) 2012 Timothy Bourke
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -24,9 +24,18 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-from mnemosyne.core import *
-from mnemosyne.pyqt_ui.plugin import get_main_widget
-from qt import *
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtWebKit import QWebView
+
+from mnemosyne.libmnemosyne.hook import Hook
+from mnemosyne.libmnemosyne.filter import Filter
+from mnemosyne.libmnemosyne.plugin import Plugin
+from mnemosyne.libmnemosyne.criterion import Criterion
+from mnemosyne.pyqt_ui.review_wdgt import ReviewWdgt
+from mnemosyne.libmnemosyne.ui_components.configuration_widget \
+   import ConfigurationWidget
+
 import sys, copy
 from os.path import exists, join
 
@@ -37,10 +46,81 @@ except Exception, e:
     mnemogogo_imported = False
     mnemogogo_imported_error = str(e)
 
+name = 'Mnemogogo'
+version = "2.0.0-alpha1"
+exported_tag_name = "Mnemogogo"
+
+def tr(text):
+    return QCoreApplication.translate("Mnemogogo", text)
+
+class MnemogogoConfig(Hook):
+    used_for = "configuration_defaults"
+
+    def run(self):
+        pass
+
+class MnemogogoReviewWdgt(ReviewWdgt):
+    plugin = None
+
+    def __init__(self, component_manager):
+        ReviewWdgt.__init__(self, component_manager)
+
+        mnemogogo.lock_enabling.add(self.show_button)
+        mnemogogo.lock_enabling.add(self.grades)
+
+        mnemogogo.lock_visible.add(self.question)
+        mnemogogo.lock_visible.add(self.question_label)
+        mnemogogo.lock_visible.add(self.answer)
+        mnemogogo.lock_visible.add(self.answer_label)
+
+        bd = self.config().data_dir
+        lock_msg_main = tr("Mobile reviewing is enabled.")
+        lock_msg_info = tr("Choose Mnemogogo from the Cards menu for options.")
+        html =  '<html>'
+        html += '<body style="margin:0; padding:0; border:thin solid #8F8F8F;">'
+        html += '<div style="height:200px; width:400px; position:absolute;'
+        html += ' top:50%; margin-top:-100px; left:50%; margin-left:-200px;'
+        html += ' text-align:center;">'
+        html += '<b><font color="red">%s</font></b><br/>' % lock_msg_main
+        html += '<br/><img src="file://%s/plugins/mnemogogo/locked.png">' % bd
+        html += '<br/><br/><i>%s</i>' % lock_msg_info
+        html += "</div></body></html>"
+
+        self.gogoinfo = QWebView(self)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+                self.gogoinfo.sizePolicy().hasHeightForWidth())
+        self.gogoinfo.setSizePolicy(sizePolicy)
+        self.gogoinfo.setMinimumSize(QSize(295, 50))
+        self.gogoinfo.setHtml(html)
+        self.gogoinfo.setObjectName("Mnemogogo message")
+        self.question_box.addWidget(self.gogoinfo)
+
+        for plugin in component_manager.all("plugin"):
+            if plugin.__class__.__name__ == "MnemogogoPlugin":
+                self.plugin = plugin
+
+        if self.plugin:
+            self.plugin.refresh(self)
+
+    def remove_locking(self):
+        self.show_button.removeLocking()
+        self.grades.removeLocking()
+
+        self.question.removeLocking()
+        self.question_label.removeLocking()
+        self.answer.removeLocking()
+        self.answer_label.removeLocking()
+
 class MnemogogoPlugin(Plugin):
-    version = "1.2.6"
+    name = name
+    description = "Making mnemosyne mobile (v" + version + ")"
+
+    components = [MnemogogoConfig, MnemogogoReviewWdgt]
+
     is_locked = False
-    old_overlay = None
     config_key = "mnemogogo"
 
     default_settings = {
@@ -54,32 +134,34 @@ class MnemogogoPlugin(Plugin):
         'max_size'      : 64,
     }
 
-    def description(self):
-        return ("Making mnemosyne mobile (v" + version + ")")
-
     def load_config(self):
         self.config_key = mnemogogo.get_config_key()
 
         try:
-            config = get_config(self.config_key)
+            config = self.config()[self.config_key]
         except KeyError:
+            self.config()[self.config_key] = {}
             config = {}
-            set_config(self.config_key, {})
         
         self.settings = copy.copy(self.default_settings)
         for k in self.settings.keys():
             if config.has_key(k): self.settings[k] = config[k]
         
     def save_config(self):
-        set_config(self.config_key, copy.copy(self.settings))
+        self.config()[self.config_key] = copy.copy(self.settings)
 
     def open_dialog(self):
+
+        mobile_before = self.settings['mode'] == 'mobile'
+
         self.gogo_dlg.configure(self.settings)
-        self.gogo_dlg.exec_loop()
+        self.gogo_dlg.exec_()
         self.settings = self.gogo_dlg.settings
 
+        mobile_after = self.settings['mode'] == 'mobile'
+
         try:
-            if self.settings['mode'] == 'mobile':
+            if mobile_after:
                 self.lock()
             else:
                 self.unlock()
@@ -91,24 +173,60 @@ class MnemogogoPlugin(Plugin):
                 + "establish the correct state.")
             self.unlock()
 
-        self.main_dlg.updateDialog()
+        if mobile_before and not mobile_after:
+            self.review_controller().reset()
+
         self.save_config()
 
     def show_error(self, msg):
         try:
-            QMessageBox.critical(None, 
-                self.main_dlg.trUtf8("Mnemogogo"),
-                self.main_dlg.trUtf8(msg),
-                self.main_dlg.trUtf8("&OK"), "", "", 0, -1)
+            QMessageBox.critical(None, tr("Mnemogogo"), tr(msg),
+                                 tr("&OK"), "", "", 0, -1)
         except TypeError:
-            QMessageBox.critical(None, 
-                self.main_dlg.trUtf8("Mnemogogo"),
-                msg,
-                self.main_dlg.trUtf8("&OK"), "", "", 0, -1)
+            QMessageBox.critical(None, tr("Mnemogogo"), msg, tr("&OK"),
+                                 "", "", 0, -1)
 
-    def load(self):
-        basedir = get_basedir()
-        self.main_dlg = get_main_widget()
+    def lock(self):
+        self.is_locked = True
+        self.refresh()
+
+    def unlock(self):
+        self.is_locked = False
+        self.refresh()
+
+    def refresh(self, widget=None):
+        try:
+            if widget is None:
+                review_controller = self.component_manager.current("review_controller")
+                widget = review_controller.widget
+
+            if self.is_locked:
+                widget.show_button.disableAndLock()
+                widget.grades.disableAndLock()
+                widget.question.hideAndLock()
+                widget.question_label.hideAndLock()
+                widget.answer.hideAndLock()
+                widget.answer_label.hideAndLock()
+                widget.gogoinfo.show()
+            else:
+                widget.show_button.unlockAndRestore()
+                widget.grades.unlockAndRestore()
+                widget.question.unlockAndRestore()
+                widget.question_label.unlockAndRestore()
+                widget.answer.unlockAndRestore()
+                widget.answer_label.unlockAndRestore()
+                widget.gogoinfo.hide()
+        except:
+            pass
+
+    def __init__(self, component_manager):
+        Plugin.__init__(self, component_manager)
+        self.menu_action = None
+
+    def activate(self):
+        Plugin.activate(self)
+
+        basedir = self.config().data_dir
 
         if not exists(join(basedir, "plugins", "mnemogogo")):
             self.show_error("Incorrect installation. Missing "
@@ -122,107 +240,41 @@ class MnemogogoPlugin(Plugin):
                 + mnemogogo_imported_error + ")")
             return
         
-        try:
-            time_of_start = mnemosyne.core.get_time_of_start()
-        except AttributeError:
-            self.show_error(
-                "Mnemogogo requires Mnemosyne version 1.2.2 or above.")
-            return
+        mnemogogo.logger = mnemogogo.Logger(basedir)
 
-        mnemogogo.log_info('version %s' % self.version)
-
+        mnemogogo.logger.log_info('version %s' % version)
         if not mnemogogo.htmltounicode_working:
-            mnemogogo.log_warning(
+            mnemogogo.logger.log_warning(
                 'Neither html.entities nor htmlentitydefs could be imported.')
         
-        self.interfaces = mnemogogo.register_interfaces()
+        self.interfaces = mnemogogo.register_interfaces(basedir)
 
-        self.gogo_dlg = mnemogogo.GogoDlg(self.main_dlg)
+        self.gogo_dlg = mnemogogo.GogoDlg(self.main_widget())
         self.gogo_dlg.setInterfaceList(self.interfaces)
 
         # Add Menu Item
-        self.menu = self.main_dlg.Deck
+        self.menu_action = QAction("&Mnemogogo", self.main_widget(),
+                shortcut=QKeySequence(Qt.ControlModifier + Qt.Key_M),
+                statusTip="Transfer cards to and from your mobile device.",
+                triggered=self.open_dialog)
 
-        self.menu_item = QAction(self.main_dlg, "menuMnemogogo")
-        self.menu_item.addTo(self.menu)
-        self.main_dlg.connect(self.menu_item, SIGNAL("activated()"),
-                              self.open_dialog)
-        self.menu_item.setText(QString.null)
-        self.menu_item.setMenuText(self.main_dlg.trUtf8("&Mnemogogo"))
-        self.menu_item.setToolTip(QString.null)
-        self.menu_item.setStatusTip(self.main_dlg.trUtf8("."))
-        self.menu_item.setAccel(self.main_dlg.trUtf8("Ctrl+M"))
+        self.main_widget().menu_Cards.addAction(self.menu_action)
 
-        # Implement locking
-        self.lock_msg_main = self.main_dlg.trUtf8(
-            "Mobile reviewing is enabled.")
-        self.lock_msg_info = self.main_dlg.trUtf8(
-            "Choose Mnemogogo from the Deck menu for options.")
-
-        mnemogogo.lock_enabling.add(self.main_dlg.show_button)
-        mnemogogo.lock_enabling.add(self.main_dlg.grades)
-
-        register_function_hook("filter_q", self.check_lock)
-        register_function_hook("filter_a", self.check_lock)
-        register_function_hook("after_load", self.after_load)
-
-    def lock(self):
-        self.is_locked = True
-        self.main_dlg.show_button.disableAndLock()
-        self.main_dlg.grades.disableAndLock()
-
-        try:
-            self.old_overlay = self.main_dlg.style['answerbox']
-            self.main_dlg.style["answerbox"] = "overlay"
-        except: self.old_overlay = None
-
-        self.main_dlg.answer.hide()
-        self.main_dlg.answer_label.hide()
-
-    def unlock(self):
-        self.is_locked = False
-        self.main_dlg.show_button.unlockAndRestore()
-        self.main_dlg.grades.unlockAndRestore()
-        try:
-            self.main_dlg.style['answerbox'] = self.old_overlay
-        except: pass
-        self.main_dlg.question.show()
-        self.main_dlg.question_label.show()
-        self.main_dlg.answer.show()
-        self.main_dlg.answer_label.show()
-
-    def unload(self):
-        self.menu_item.removeFrom(self.menu)
-        self.unlock()
-        unregister_function_hook("filter_q", self.check_lock)
-        unregister_function_hook("filter_a", self.check_lock)
-        unregister_function_hook("after_load", self.after_load)
-        self.main_dlg.show_button.removeLocking()
-        self.main_dlg.grades.removeLocking()
-
-    def check_lock(self, text, card):
-        try: dlg_name = sys._getframe(2).f_locals['self'].__class__.__name__
-        except: dlg_name = 'MainDlg'
-
-        if (not self.is_locked) or (dlg_name == 'PreviewItemDlg'):
-            return text
-
-        base = mnemosyne.core.get_basedir()
-
-        text = "<b><font color=\"red\">%s</font></b>" % self.lock_msg_main
-        text += "<br><br><img src=\"%s/plugins/mnemogogo/locked.png\">" % base
-        text += "<br><br><i>%s</i>" % self.lock_msg_info
-        text += "<card style=\"answerbox: overlay\"/>"
-
-        return mnemosyne.core.preprocess(text)
-
-    def after_load(self):
         self.load_config()
         if self.settings['mode'] == 'mobile':
             self.lock()
         else:
             self.unlock()
 
-p = MnemogogoPlugin()
-p.load()
+    def deactivate(self):
+        Plugin.deactivate(self)
+
+        if self.menu_action:
+            self.main_widget().menu_Cards.removeAction(self.menu_action)
+            self.menu_action = None
+
+        self.unlock()
+
+from mnemosyne.libmnemosyne.plugin import register_user_plugin
+register_user_plugin(MnemogogoPlugin)
 
