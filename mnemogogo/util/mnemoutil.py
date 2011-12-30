@@ -62,7 +62,54 @@ def show_info(ms):
     counters = ms.review_controller().counters()
     print "scheduled: %d; not memorised: %d; active: %d" % counters
 
-def show_card(card, show_content=False):
+learning_data = [
+    'grade',
+    'easiness',
+    'acq_reps',
+    'ret_reps',
+    'lapses',
+    'acq_reps_since_lapse',
+    'ret_reps_since_lapse',
+    'last_rep',
+    'next_rep',
+    'unseen',
+    ]
+
+learning_data_len = {
+    'grade'                 : 1,
+    'easiness'              : 4,
+    'acq_reps'              : 4,
+    'ret_reps'              : 4,
+    'lapses'                : 4,
+    'acq_reps_since_lapse'  : 4,
+    'ret_reps_since_lapse'  : 4,
+    'last_rep'              : 8,
+    'next_rep'              : 8,
+    'unseen'                : 1,
+    }
+
+easiness_accuracy = 1000
+
+def show_card_stats(card):
+    stats = {}
+    for f in learning_data:
+        if f == 'easiness':
+            stats[f] = int(round(card.easiness * easiness_accuracy))
+        elif f == 'unseen':
+            stats[f] = int(card.active == 1 and card.grade == -1)
+        elif f == 'last_rep' or f == 'next_rep':
+            # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
+            # seconds
+            stats[f] = int(getattr(card, f) / DAY)
+        else:
+            stats[f] = int(getattr(card, f))
+
+    for s in learning_data:
+        fmt = "%%0%dx," % learning_data_len[s]
+        print fmt % stats[s],
+    print ("%s/%s (%s)" % (card.id, card._id, [t.name for t in card.tags][0]))
+
+def show_card(card):
     print "id: %s (%s)" % (card.id, card._id)
     for attr in [
             "grade",
@@ -82,14 +129,6 @@ def show_card(card, show_content=False):
     print "unseen: %d" % (card.active == 1 and card.grade == -1)
     print "tags: %s" % (", ". join(map(lambda t : "'%s'" % t.name, card.tags)))
 
-    if show_content:
-        print "question:",
-        print card.question(render_chain="default").replace("\n", "\n|") \
-                .encode('utf-8')
-        print "answer:",
-        print card.answer(render_chain="default").replace("\n", "\n|") \
-                .encode('utf-8')
-
 def ignore_method(self, *args, **kwargs):
     pass
 
@@ -106,9 +145,15 @@ def main():
                       help="data directory", default=None)
     parser.add_option("-t", "--tags", dest="only_tags",
                       help="limit to given tags", default="")
+    parser.add_option("-c", "--content", dest="show_content",
+                      action="store_true", help="show card content")
+    parser.add_option("-s", "--stats", dest="show_stats",
+                      action="store_true", help="show stat lines")
     (options, args) = parser.parse_args()
 
-    only_tags = set([s.strip() for s in options.only_tags.split(',')])
+    only_tags = set([s.strip() for s
+                     in options.only_tags.split(',')
+                     if s.strip()])
 
     data_dir = None
     if options.data_dir != None:
@@ -140,17 +185,38 @@ def main():
     db = ms.database()
     config = ms.config()
 
-    show_info(ms)
+    if not options.show_stats:
+        show_info(ms)
 
-    print "cards due for ret rep:"
-    for _card_id, _fact_id in db.cards_due_for_ret_rep(adjusted_now()):
+    cards = db.all_cards()
+    count = 0
+    for _card_id, _fact_id in cards:
         card = db.card(_card_id, is_id_internal=True)
 
-        if (only_tags is None
+        if (not only_tags
                 or only_tags.intersection({ t.name for t in card.tags})):
-            print "--------------------%s (%s)" % (_card_id, _fact_id)
-            show_card(card, show_content=True)
 
+            if options.show_stats:
+                show_card_stats(card)
+            else:
+                print "--------------------%s (%s)" % (_card_id, _fact_id)
+                show_card(card)
+
+            if options.show_content:
+                print "question:",
+                print card.question(render_chain="default").replace("\n",
+                            "\n|").encode('utf-8')
+                print "answer:",
+                print card.answer(render_chain="default").replace("\n",
+                            "\n|").encode('utf-8')
+
+            count += 1
+
+    if not options.show_stats:
+        print
+        print "total: %d" % count
+
+    #db.cards_due_for_ret_rep(adjusted_now())
     #db.cards_new_memorising(0)
     #db.cards_new_memorising(1)
     #db.cards_to_relearn(0):
