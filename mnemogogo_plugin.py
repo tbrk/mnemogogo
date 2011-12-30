@@ -34,7 +34,9 @@ from mnemosyne.libmnemosyne.plugin import Plugin
 from mnemosyne.libmnemosyne.criterion import Criterion
 from mnemosyne.pyqt_ui.review_wdgt import ReviewWdgt
 from mnemosyne.libmnemosyne.ui_components.configuration_widget \
-   import ConfigurationWidget
+    import ConfigurationWidget
+from mnemosyne.libmnemosyne.render_chains.default_render_chain \
+    import DefaultRenderChain
 
 import sys, copy
 from os.path import exists, join
@@ -58,6 +60,9 @@ class MnemogogoConfig(Hook):
 
     def run(self):
         pass
+
+class MnemogogoRenderChain(DefaultRenderChain):
+    id = "mnemogogo"
 
 class MnemogogoReviewWdgt(ReviewWdgt):
     plugin = None
@@ -118,7 +123,7 @@ class MnemogogoPlugin(Plugin):
     name = name
     description = "Making mnemosyne mobile (v" + version + ")"
 
-    components = [MnemogogoConfig, MnemogogoReviewWdgt]
+    components = [MnemogogoConfig, MnemogogoRenderChain, MnemogogoReviewWdgt]
 
     is_locked = False
     config_key = "mnemogogo"
@@ -135,7 +140,7 @@ class MnemogogoPlugin(Plugin):
     }
 
     def load_config(self):
-        self.config_key = mnemogogo.get_config_key()
+        self.config_key = mnemogogo.get_config_key(self.config())
 
         try:
             config = self.config()[self.config_key]
@@ -154,7 +159,8 @@ class MnemogogoPlugin(Plugin):
 
         mobile_before = self.settings['mode'] == 'mobile'
 
-        self.gogo_dlg.configure(self.settings)
+        self.gogo_dlg.configure(self.settings, self.config(), self.database(),
+                                self.review_controller())
         self.gogo_dlg.exec_()
         self.settings = self.gogo_dlg.settings
 
@@ -240,11 +246,11 @@ class MnemogogoPlugin(Plugin):
                 + mnemogogo_imported_error + ")")
             return
         
-        mnemogogo.logger = mnemogogo.Logger(basedir)
+        mnemogogo.set_logger(mnemogogo.Logger(basedir))
 
-        mnemogogo.logger.log_info('version %s' % version)
+        mnemogogo.logger().log_info('version %s' % version)
         if not mnemogogo.htmltounicode_working:
-            mnemogogo.logger.log_warning(
+            mnemogogo.logger().log_warning(
                 'Neither html.entities nor htmlentitydefs could be imported.')
         
         self.interfaces = mnemogogo.register_interfaces(basedir)

@@ -16,15 +16,6 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-# TODO:
-# * how to handle time_of_start
-# * how to detect overlays
-# * how to get a list of upcoming cards from the scheduler
-# * how to get plain question/answer text
-# * can we rely on ids?
-# * what about when a card type changes?
-# * Add a render chain for mnemogogo
-
 import sys
 import os
 import os.path
@@ -33,14 +24,27 @@ import re
 import itertools
 import random
 import traceback
-import time
-
-#from qt import *
+import time, datetime
 
 interface_classes = []
 
-logger = None
+# TODO:
+# * Upgrade mobile clients to distinguish between 1.x and 2.x exports.
+#   (see card_to_stats and log_repetition)
+#   - add a config entry: file_format = 1.0 or 2.0, default to 1.0
+#   - add a dropdown entry to select the new client? or a note?
+
+_logger = None
 max_config_size = 50
+DAY = 86400
+
+def set_logger(new_logger):
+    global _logger
+    _logger = new_logger
+
+def logger():
+    global _logger
+    return _logger
 
 def phonejoin(paths):
     if len(paths) == 0: return ""
@@ -150,29 +154,13 @@ class Export(Job):
         pass
 
     # implement in plugin
-    def write(self, id, q, a, cat, stats, inverse_ids):
+    def write(self, id, q, a, cat, stats, inverse_id, is_overlay):
         pass
 
     def write_config(self, config):
         pass
 
     # # # Utility routines # # #
-
-    # TODO
-    def is_overlay(self, text):
-        r = False
-        abox = mnemosyne.pyqt_ui.card_prop.card_props(text).get('answerbox')
-        return (abox == 'overlay')
-    
-    # TODO
-    def remove_overlay(self, text):
-        return mnemosyne.pyqt_ui.card_prop.re_card_props.sub('', text)
-
-    # TODO
-    def call_hooks(self, target, hook):
-        if hook in mnemosyne.core.function_hooks:
-            for f in mnemosyne.core.function_hooks[hook]:
-                f(target)
 
     def tidy_files(self, dst_subdir, list):
         dstpath = os.path.join(self.sync_path, dst_subdir)
@@ -182,7 +170,7 @@ class Export(Job):
                 try:
                     os.remove(os.path.join(dstpath, file))
                 except:
-                    logger.log_warning ("Could not remove: %s" % file)
+                    logger().log_warning ("Could not remove: %s" % file)
 
     def tidy_images(self, dst_subdir):
         self.tidy_files(dst_subdir, self.imgs.values())
@@ -192,16 +180,6 @@ class Export(Job):
     
     def add_style_file(self, dstpath):
         shutil.copy(os.path.join(self.gogo_dir, 'style.css'), dstpath)
-
-    def add_active_categories(self):
-        mcats = mnemosyne.core.get_categories() # TODO
-        cats = []
-        for mc in mcats:
-            if mc.active:
-                cats.append(mc.name)
-
-        cats.sort()
-        map(self.category_id, cats)
 
     def category_id(self, cat):
         try:
@@ -230,7 +208,7 @@ class Export(Job):
         dst = os.path.join(self.sync_path, dst_subdir, dst_file)
 
         if not os.path.exists(src):
-            logger.log_warning("image not found: %s" % src)
+            logger().log_warning("image not found: %s" % src)
             return (False, 'NOTFOUND.PNG')
 
         if (os.path.exists(dst) and
@@ -266,7 +244,7 @@ class Export(Job):
 
             r = im.save(tmpdst, 'PNG')
             if not r:
-                logger.log_warning('unable to export the image: %s' % src)
+                logger().log_warning('unable to export the image: %s' % src)
                 return (True, dst_file)
 
             (nwidth, nheight) = (width, height)
@@ -318,9 +296,6 @@ class Export(Job):
 
                 (moved, dst) = self.convert_img(src, dst_subdir, name,
                         self.img_to_ext)
-                if moved:
-                    self.call_hooks(os.path.join(
-                        self.sync_path, dst_subdir, dst), 'gogo_img')
 
                 self.imgs[src] = phonejoin([dst_subdir, dst])
 
@@ -349,11 +324,10 @@ class Export(Job):
                 try:
                     shutil.copy(src, dst_path)
                     self.snds[src] = phonejoin([dst_subdir, dst])
-                    self.call_hooks(dst_path, 'gogo_snd')
                     ntext.append('<sound src="%s" />' % self.snds[src])
 
                 except IOError:
-                    logger.log_warning("sound file not found: %s" % src)
+                    logger().log_warning("sound file not found: %s" % src)
         
         ntext.append(self.re_snd_split.sub('', text))
         return '\n'.join(ntext)
@@ -443,96 +417,83 @@ def register_interfaces(basedir):
 def list_interfaces():
     return interfaces
 
-# These generators were adapted from the rebuild_revision_queue
-# function in the Mnemosyne 1.1.1 core module, which was written
-# by <Peter.Bienstman@UGent.be>.
-# NB: this function could try harder to avoid including inverses.
-def extra_cards(items):
+# These utility functions were modified from Mnemosyne 2.x code
+# originally written by <Peter.Bienstman@UGent.be>.
 
-    wrong_cards_0 = (i for i in items if i.is_due_for_acquisition_rep() \
-                                         and i.lapses > 0
-                                         and i.grade == 0)
+def adjusted_now(now=None, day_starts_at = 3):
 
-    wrong_cards_1 = (i for i in items if i.is_due_for_acquisition_rep() \
-                                         and i.lapses > 0
-                                         and i.grade == 1)
+    if now == None:
+        now = time.time()
+    now -= day_starts_at * 60 * 60 
+    if time.daylight:
+        now -= time.altzone
+    else:
+        now -= time.timezone
+    return int(now)
 
-    not_committed_0 = (i for i in items if i.is_due_for_acquisition_rep() \
-                                           and i.lapses == 0
-                                           and i.unseen == False
-                                           and i.grade == 0)
+def midnight_UTC(timestamp):        
+    date_only = datetime.date.fromtimestamp(timestamp)
+    return int(calendar.timegm(date_only.timetuple()))
 
-    not_committed_1 = (i for i in items if i.is_due_for_acquisition_rep() \
-                                           and i.lapses == 0
-                                           and i.unseen == False
-                                           and i.grade == 1)
+def next_rep_to_interval(next_rep, now=None):
+    if now is None:
+        now = adjusted_now()
+    return (next_rep - now) / DAY
 
-    unseen = (i for i in items if i.is_due_for_acquisition_rep() \
-                                   and i.lapses == 0
-                                   and (i.unseen or i.grade not in [0, 1]))
-    
-    return itertools.chain(wrong_cards_0, wrong_cards_1, not_committed_0,
-                           not_committed_1, unseen)
+def last_rep_to_interval(last_rep, now=None):
+    if now is None:
+        now = adjusted_now()
+    now = midnight_UTC(now)
+    last_rep = midnight_UTC(adjusted_now(now=last_rep))
+    return (last_rep - now) / DAY
 
 # Return enough cards for rebuild_revision_queue on the mobile device to
 # work with for the given number of days.
-def cards_for_ndays(days = 0, extra = 1.00):
+def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
+                    grade_0_items_at_once = 5):
             
-    items = mnemosyne.core.get_items() # TODO
-    random.shuffle(items)
-    revision_queue = []
+    end_date = adjusted_now(time.time() + days * DAY, day_starts_at)
+    limit = grade_0_items_at_once * (days + 1) * extra
 
-    if len(items) == 0:
-        return revision_queue
+    cards = list(db.cards_due_for_ret_rep(end_date))
 
-    # TODO
-    limit = (mnemosyne.core.get_config("grade_0_items_at_once")
-             * (days + 1) * extra)
+    if limit > 0:
+        relearn1 = list(db.cards_to_relearn(grade=1, limit=limit))
+        limit -= len(relearn1)
+        cards.extend(relearn1)
 
-    # TODO
-    time_of_start = mnemosyne.core.get_time_of_start()
-    time_of_start.update_days_since()
-    scheduled_cards = (i for i in items if i.is_due_for_retention_rep(days))
+    if limit > 0:
+        relearn0 = list(db.cards_to_relearn(grade=0, limit=limit))
+        limit -= len(relearn0)
+        cards.extend(relearn0)
 
-    return itertools.chain(scheduled_cards,
-                           itertools.islice(extra_cards(items), limit))
+    if limit > 0:
+        newmem0 = list(db.cards_new_memorising(grade=0, limit=limit))
+        limit -= len(newmem0)
+        cards.extend(newmem0)
 
-num_suffix_re = re.compile(r'^(.*?)([0-9]*)$')
-def get_fresh_id(cardid, used_ids):
-    r = num_suffix_re.match(cardid)
-    prefix = r.group(1)
-    suffix_str = r.group(2)
-    if suffix_str == '': suffix_str = "0"
+    if limit > 0:
+        newmem1 = list(db.cards_new_memorising(grade=1, limit=limit))
+        limit -= len(newmem1)
+        cards.extend(newmem1)
 
-    suffix = int(suffix_str) + 1
-    while used_ids.has_key(prefix + str(suffix)):
-        suffix += 1
+    if limit > 0:
+        unseen = list(db.cards_unseen(limit=limit))
+        cards.extend(unseen)
 
-    return prefix + str(suffix)
-
-def eliminate_duplicate_ids():
-    items = mnemosyne.core.get_items() # TODO
-
-    checked = {}
-    for item in items:
-        checked[item.id] = False
-
-    for item in items:
-        if type(item.id) not in [str, unicode]:
-            log_info ("Converting id to string: %s" % item.id)
-            item.id = unicode(item.id)
-
-        if checked[item.id]:
-            newid = get_fresh_id(item.id, checked)
-            logger.log_info ("Fixing duplicate id: %s -> %s" % (item.id, newid))
-            item.id = newid
-        checked[item.id] = True
+    return cards
 
 def card_to_stats(card):
     stats = {}
     for f in learning_data:
         if f == 'easiness':
-            stats[f] = int(round(getattr(card, f) * easiness_accuracy))
+            stats[f] = int(round(card.easiness * easiness_accuracy))
+        elif f == 'unseen':
+            stats[f] = int(card.active == 1 and card.grade == -1)
+        elif f == 'last_rep' or f == 'next_rep':
+            # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
+            # seconds
+            stats[f] = int(getattr(card, f) / DAY)
         else:
             stats[f] = int(getattr(card, f))
     return stats
@@ -540,37 +501,28 @@ def card_to_stats(card):
 def stats_to_card(stats, card):
     for f in learning_data:
         if f == 'easiness':
-            setattr(card, f, float(stats[f]) / easiness_accuracy)
+            card.easiness = float(stats[f]) / easiness_accuracy
         elif f == 'unseen':
-            setattr(card, f, bool(stats[f]))
+            pass
         else:
             setattr(card, f, int(stats[f]))
 
-def process(card, which):
-    hook = "gogo_" + which
-    text = mnemosyne.core.preprocess(getattr(card, which)) # TODO
-    if hook in mnemosyne.core.function_hooks: # TODO
-        for f in mnemosyne.core.function_hooks[hook]:
-            text = f(text, card)
-    return text
+def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
+              progress_bar=None, extra = 1.00, max_width = 240,
+              max_height = 300, max_size = 64):
 
-def do_export(interface, num_days, sync_path, progress_bar=None,
-              extra = 1.00, max_width = 240, max_height = 300, max_size = 64):
-    basedir = mnemosyne.core.get_basedir() # TODO
+    basedir = mnemoconfig.data_dir
 
-    eliminate_duplicate_ids()
     exporter = interface.start_export(sync_path)
     exporter.gogo_dir = unicode(os.path.join(basedir, "plugins", "mnemogogo"))
     exporter.progress_bar = progress_bar
 
-    # TODO
+    grade_0_at_once = mnemoconfig["non_memorised_cards_in_hand"]
     config = {
-            'grade_0_items_at_once'
-                : mnemosyne.core.get_config('grade_0_items_at_once'),
-            'logging'
-                : "%d" % mnemosyne.core.get_config('upload_logs'),
+            'grade_0_items_at_once' : grade_0_at_once,
+            'logging' : "1",
             'database'
-                : get_database().encode('punycode')[-max_config_size:],
+                : get_database(mnemoconfig).encode('punycode')[-max_config_size:],
         }
 
     params = {
@@ -579,66 +531,119 @@ def do_export(interface, num_days, sync_path, progress_bar=None,
             'max_size' : max_size,
         }
 
-    cards = list(cards_for_ndays(num_days, extra))
-    cards.sort(key=mnemosyne.core.Item.sort_key_interval) # TODO
-    time_of_start = mnemosyne.core.get_time_of_start() # TODO
-    items = mnemosyne.core.get_items() # TODO
+    cards = cards_for_ndays(mnemodb, num_days, extra,
+                            int(mnemoconfig["day_starts_at"]), grade_0_at_once)
+    card_ids = [ card_id for card_id, fact_id in cards ]
+    card_to_fact = dict(cards)
+    fact_to_card = dict((v, k) for k, v in cards)
 
     total = len(cards)
     current = 0
 
-    exporter.open(time_of_start.date, num_days, len(cards), params)
-    exporter.id_to_serial = dict(zip((i.id for i in cards),
-                                 range(0, len(cards))))
+    exporter.open(datetime.date.fromtimestamp(0), num_days, total, params)
+    exporter.id_to_serial = dict(zip(card_ids, range(0, total)))
     exporter.write_config(config)
-    for card in cards:
+    for card_id in card_ids:
+        card = mnemodb.card(card_id, is_id_internal=True)
         stats = card_to_stats(card)
-        q = process(card, "q")
-        a = process(card, "a")
-        inverses = (i.id for i in cards
-                    if mnemosyne.core.items_are_inverses(card, i)) # TODO
-        exporter.write(card.id, q, a, card.cat.name, stats, inverses)
+
+        q = card.question(render_chain="mnemogogo")
+        a = card.answer(render_chain="mnemogogo")
+        is_overlay = card.fact_view.a_on_top_of_q
+
+        try:
+            inverse_id = fact_to_card[card_to_fact[card_id]]
+        except KeyError:
+            inverse_id = None
+
+        try:
+            category = [t.name for t in card.tags][0]
+            if category == "__UNTAGGED__":
+                category = 'None'
+        except IndexError:
+            category = 'None'
+
+        exporter.write(str(card_id), q, a, category, stats,
+                       str(inverse_id), is_overlay)
 
         if progress_bar:
-            progress_bar.setProgress(exporter.percentage_complete)
+            progress_bar.setProperty("value", exporter.percentage_complete)
 
     exporter.close()
 
-def adjust_start_date(import_start_date):
+# Some of this code was adapted from Peter Bienstman's
+# ScienceLogParser.parse_repetition in Mnemosyne 2.x.
+def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
 
-    time_of_start = mnemosyne.core.get_time_of_start() # TODO
-    db_start_date = time_of_start.date
-    offset = (import_start_date - db_start_date).days
+    # Parse chunk.
+    blocks = repetition_chunk.split(" | ")
+    logtype, card_id, grade, easiness = blocks[0].split(" ")
+    if card_id not in to_user: return
 
-    if offset < 0:
-        logger.log_error(
-            "database time_of_start is later than import time_of_start!")
+    grade = int(grade)
+    easiness = float(easiness)
 
-        # The database time_of_start should only ever be pushed back earlier
-        # into time (by an import with learning data).
-        #
-        # The reason we can't have:
-        #       t = time.mktime(import_start_date.timetuple())
-        #       new_time_of_start = mnemosyne.core.StartTime(t)
-        #       mnemosyne.core.set_time_of_start(new_time_of_start)
-        #       items = mnemosyne.core.get_items()
-        #       offset = abs(offset)
-        #       for item in items:
-        #           item.last_rep += offset
-        #           item.next_rep += offset
-        #       return 0
-        #
-        # is because there is no mnemosyne.core.set_time_of_start() function.
+    acq_reps, ret_reps, lapses, acq_reps_since_lapse, \
+        ret_reps_since_lapse = blocks[1].split(" ")
+    acq_reps, ret_reps = int(acq_reps), int(ret_reps)
+    lapses = int(lapses)
+    acq_reps_since_lapse = int(acq_reps_since_lapse)
+    ret_reps_since_lapse = int(ret_reps_since_lapse)  
 
-    return offset
+    scheduled_interval, actual_interval = blocks[2].split(" ")
+    scheduled_interval = int(scheduled_interval)
+    actual_interval = int(actual_interval)
+    new_interval, noise = blocks[3].split(" ")
+    new_interval = int(float(new_interval)) + int(noise)
 
-def do_import(interface, sync_path, progress_bar=None):
+    thinking_time = round(float(blocks[4]))
+
+    if logtype == 'S': # 'S': updated 2.x style log entry, second accuracy
+        timestamp, last_rep, next_rep = blocks[5].split(" ")
+
+    else: # 'R': 1.x style log entry, daily accuracy
+          # see also: cards_to_stats
+        actual_interval    *= DAY
+        scheduled_interval *= DAY
+        new_interval       *= DAY
+
+        try:
+            last_rep, next_rep = rep_data[card_id]
+
+            if next_rep - last_rep != scheduled_interval:
+                logger().log_info(
+                    "Invalid scheduled_interval: %s next=%d last=%d interval=%d" % (
+                        card_id, next_rep, last_rep, scheduled_interval))
+                raise Exception
+
+            else:
+                timestamp = last_rep + actual_interval
+
+                last_rep = timestamp
+                next_rep = timestamp + new_interval
+                rep_data[card_id] = (last_rep, next_rep)
+
+        except:
+            timestamp = time.time()
+            actual_interval = 0
+            last_rep = 0
+            next_rep = 0
+
+    # Note: we bypass the Logger.repetition() interface because that routine
+    #       does not allow us to pass a timestamp.
+    mnemodb.log_repetition(timestamp, to_user[card_id], grade,
+        easiness, acq_reps, ret_reps, lapses,
+        acq_reps_since_lapse, ret_reps_since_lapse,
+        scheduled_interval, actual_interval, new_interval,
+        thinking_time, last_rep, next_rep, scheduler_data=0)
+
+def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
     importer = interface.start_import(sync_path)
     importer.progress_bar = progress_bar
 
     import_config = importer.read_config()
     if (import_config.has_key('database')):
-        curr_database = get_database().encode('punycode')[-max_config_size:]
+        curr_database = get_database(mnemoconfig).encode('punycode')[-max_config_size:]
         load_database = import_config['database']
         if load_database != curr_database:
             raise Mnemogogo("These cards were exported from '"
@@ -647,25 +652,30 @@ def do_import(interface, sync_path, progress_bar=None):
                     + curr_database
                     + "'!")
  
-    offset = adjust_start_date(importer.get_start_date(import_config))
-
     new_stats = []
-    for (id, stats) in importer:
-        card = mnemosyne.core.get_item_by_id(id)
+    to_user = {}
+    rep_data = {}
+    for (card_id, stats) in importer:
+        try:
+            card = mnemodb.card(card_id, is_id_internal=True)
+
+            to_user[card._id] = card.id
+            rep_data[card._id] = (card.last_rep, card.next_rep)
+        except:
+            card = None
+
         if card is not None:
-            if offset != 0:
-                stats['last_rep'] += offset
-                stats['next_rep'] += offset
             new_stats.append((card, stats))
         else:
-            logger.log_error("Quietly ignoring card with missing id: %s" % id)
+            logger().log_error("Quietly ignoring card with missing id: %s" % card_id)
 
         if (progress_bar):
-            progress_bar.setProgress(importer.percentage_complete)
+            progress_bar.setProperty("value", importer.percentage_complete)
 
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
         stats_to_card(stats, card)
+        mnemodb.update_card(card, repetition_only=True)
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),
                 os.path.join(sync_path, 'OLDSTATS.CSV'))
@@ -675,28 +685,27 @@ def do_import(interface, sync_path, progress_bar=None):
     if os.path.exists(logpath):
         log = open(logpath)
 
-        mnemosyne.core.logger.info('mnemogogo: starting log import')
+        logger().log_info('starting log import')
         line = log.readline()
         while line != '':
-            mnemosyne.core.logger.info(line.rstrip('\n'))
+            log_repetition(mnemodb, line.rstrip('\n'), rep_data, to_user)
             line = log.readline()
-        mnemosyne.core.logger.info('mnemogogo: finished log import')
+
+        logger().log_info('finished log import')
 
         log.close()
         os.remove(logpath)
 
-def get_database():
-    # TODO: is this still necessary?
-    #try:
-        #mempath =  mnemosyne.core.get_config("path")
-    #except KeyError:
-        #mempath = "default.mem"
+def get_database(config):
+    try:
+        mempath =  config["path"]
+    except KeyError:
+        mempath = "default.mem"
 
-    mempath = "default.mem"
     return mempath[:-4]
 
-def get_config_key():
-    mempath = get_database()
+def get_config_key(config):
+    mempath = get_database(config)
 
     if mempath == "default":
         config_key = "mnemogogo"
@@ -724,18 +733,21 @@ class Logger:
 
     def log_info(self, msg):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp,
+                                                       msg.encode('utf-8'))
         self.logfile.flush()
 
     def log_warning(self, msg):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp,
+                                                       msg.encode('utf-8'))
         self.logfile.flush()
 
     def log_error(self, msg):
         self.read_logfile = True
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp, msg)
+        print >> self.logfile, "%s : mnemogogo: %s" % (timestamp,
+                                                       msg.encode('utf-8'))
         self.logfile.flush()
 
     def check_log_status(self):

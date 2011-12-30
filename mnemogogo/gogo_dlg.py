@@ -22,7 +22,6 @@ from PyQt4.QtGui import *
 from gogo_frm import *
 import traceback
 from core import *
-#from mnemosyne.core import * # TODO
 
 def tr(text):
     return QCoreApplication.translate("Mnemogogo", text)
@@ -144,21 +143,21 @@ class GogoDlg(QDialog):
 
             self.ui.progressBar.setEnabled(True)
             self.ui.progressBar.show()
-            if logger:
-                logger.clear_log_status()
-            #TODO
-            #do_export(
-                #self.name_to_object[self.settings['interface']],
-                #self.settings['n_days'],
-                #self.settings['sync_path'],
-                #self.ui.progressBar,
-                #self.settings['extra_factor'],
-                #self.settings['max_width'],
-                #self.settings['max_height'],
-                #self.settings['max_size']
-                #)
+            logger().clear_log_status()
+            do_export(
+                self.name_to_object[self.settings['interface']],
+                self.settings['n_days'],
+                self.settings['sync_path'],
+                self.mnemosyne_database,
+                self.mnemosyne_config,
+                self.ui.progressBar,
+                self.settings['extra_factor'],
+                self.settings['max_width'],
+                self.settings['max_height'],
+                self.settings['max_size']
+                )
             self.setMobile()
-            if logger and logger.check_log_status():
+            if logger().check_log_status():
                 self.showWarning(
                     u"Messages were written to gogolog.txt in the "
                     + u"Mnemosyne home directory.")
@@ -175,19 +174,18 @@ class GogoDlg(QDialog):
         try:
             self.ui.progressBar.setEnabled(True)
             self.ui.progressBar.show()
-            if logger:
-                logger.clear_log_status()
-            # XXX
-            #do_import(
-                #self.name_to_object[self.settings['interface']],
-                #self.settings['sync_path'],
-                #self.ui.progressBar)
+            logger().clear_log_status()
+            do_import(
+                self.name_to_object[self.settings['interface']],
+                self.settings['sync_path'],
+                self.mnemosyne_database,
+                self.mnemosyne_config,
+                self.ui.progressBar)
             self.setLocal()
-            #XXX
-            #rebuild_revision_queue(False)
-            #self.main_dlg.newQuestion()
-            #self.main_dlg.updateDialog()
-            if logger and check_log_status():
+
+            self.mnemosyne_revcontroller.reset_but_try_to_keep_current_card()
+            
+            if logger().check_log_status():
                 self.showWarning(
                     u"Messages were written to log.txt in the "
                     + u"Mnemosyne home directory.")
@@ -214,7 +212,12 @@ class GogoDlg(QDialog):
         if d != "":
             self.ui.syncPath.setText(d)
     
-    def configure(self, settings):
+    def configure(self, settings, mnemosyne_config, database,
+                  review_controller):
+        self.mnemosyne_config = mnemosyne_config
+        self.mnemosyne_database = database
+        self.mnemosyne_revcontroller = review_controller
+
         if settings.has_key('mode'):
             self.mode = settings['mode']
         

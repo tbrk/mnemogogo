@@ -86,8 +86,6 @@ class BasicExport(mnemogogo.Export):
         self.idfile = open(join(self.sync_path, 'IDS'), 'wb')
         self.serial_num = 0
 
-        self.add_active_categories()
-
     def close(self):
 
         catfile = codecs.open(join(self.sync_path, 'CATS'),
@@ -119,7 +117,7 @@ class BasicExport(mnemogogo.Export):
 
         cfile.close()
 
-    def write(self, id, q, a, cat, stats, inverse_ids):
+    def write(self, id, q, a, cat, stats, inverse_id=None, is_overlay=False):
         # Write stats
         for s in self.learning_data:
             fmt = "%%0%dx," % self.learning_data_len[s]
@@ -127,12 +125,12 @@ class BasicExport(mnemogogo.Export):
         cat_id = self.category_id(cat)
         self.statfile.write("%04x" % cat_id)
 
-        try:
-            self.statfile.write(",%04x" %
-                self.id_to_serial[inverse_ids.next()])
-        except StopIteration:
-            self.statfile.write(",ffff")
-        except KeyError:
+        if inverse_id:
+            try:
+                self.statfile.write(",%04x" % self.id_to_serial[inverse_id])
+            except KeyError:
+                self.statfile.write(",ffff")
+        else:
             self.statfile.write(",ffff")
 
         self.statfile.write("\n");
@@ -144,8 +142,7 @@ class BasicExport(mnemogogo.Export):
         (q, a) = self.do_sounds(self.serial_num, q, a);
 
         # Write card data
-        self.write_data(self.cardfile, self.serial_num, q, a, cat,
-                         (self.is_overlay(q) or self.is_overlay(a)))
+        self.write_data(self.cardfile, self.serial_num, q, a, cat, is_overlay)
 
         self.serial_num += 1
         self.percentage_complete = (self.serial_num * 80) / self.num_cards
@@ -193,13 +190,14 @@ class Import(mnemogogo.Import):
         prelog = open(prelog_path, 'r')
         postlog = open(postlog_path, 'w')
 
-        serialtoid_re = re.compile(r'R <(?P<id>[0-9]+)>')
+        serialtoid_re = re.compile(r'(?P<logtype>[RS]) <(?P<id>[0-9]+)>')
         line = prelog.readline()
         while line != '':
             try:
                 r = serialtoid_re.match(line)
                 line = serialtoid_re.sub(
-                        'R ' + self.serial_to_id[r.group('id')], line)
+                        r.group('logtype') + ' '
+                        + self.serial_to_id[r.group('id')], line)
                 postlog.write(line)
             except:
                 mnemogogo.log_warning("ignoring log line: " + line)
@@ -305,8 +303,6 @@ class JojoExport(BasicExport):
     add_center_tag = False
 
     def convert(self, text):
-        text = self.remove_overlay(text)
-
         if not self.conversions:
             for (name, rgb) in color_map:
                 self.raw_conversions.append(make_map_color_re(name, rgb))

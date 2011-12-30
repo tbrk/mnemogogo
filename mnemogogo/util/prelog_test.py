@@ -37,12 +37,12 @@ serialtoid_re = re.compile(r'R <(?P<id>[0-9]+)>')
 line = prelog.readline()
 while line != '':
     try:
-	r = serialtoid_re.match(line)
-	line = serialtoid_re.sub(
-		'R ' + serial_to_id[r.group('id')], line)
-	print >> sys.stdout, line
+        r = serialtoid_re.match(line)
+        line = serialtoid_re.sub(
+                'R ' + serial_to_id[r.group('id')], line)
+        print >> sys.stdout, line
     except:
-	print >> sys.stderr, "! ignoring log line: " + line
+        print >> sys.stderr, "! ignoring log line: " + line
 
     line = prelog.readline()
 
