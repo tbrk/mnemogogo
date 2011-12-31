@@ -483,19 +483,27 @@ def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
 
     return cards
 
-def card_to_stats(card):
+def card_to_stats(card, unseen_compat):
     stats = {}
     for f in learning_data:
         if f == 'easiness':
             stats[f] = int(round(card.easiness * easiness_accuracy))
         elif f == 'unseen':
-            stats[f] = int(card.active == 1 and card.grade == -1)
+            stats[f] = int(card.grade == -1)
         elif f == 'last_rep' or f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
             # seconds
             stats[f] = int(getattr(card, f) / DAY)
         else:
             stats[f] = int(getattr(card, f))
+
+    if unseen_compat and stats['unseen']:
+        stats['grade'] = max(0, stats['grade'])
+        stats['acq_reps'] = max(0, stats['acq_reps'])
+        stats['acq_reps_since_lapse'] = max(0, stats['acq_reps_since_lapse'])
+        stats['last_rep'] = max(0, stats['last_rep'])
+        stats['next_rep'] = max(0, stats['next_rep'])
+
     return stats
 
 def stats_to_card(stats, card):
@@ -545,7 +553,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
     exporter.write_config(config)
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
-        stats = card_to_stats(card)
+        stats = card_to_stats(card, unseen_compat=True)
 
         q = card.question(render_chain="mnemogogo")
         a = card.answer(render_chain="mnemogogo")
@@ -674,6 +682,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
 
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
+        if card.unseen: continue
         stats_to_card(stats, card)
         mnemodb.update_card(card, repetition_only=True)
 

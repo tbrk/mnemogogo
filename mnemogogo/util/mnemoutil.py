@@ -90,13 +90,22 @@ learning_data_len = {
 
 easiness_accuracy = 1000
 
-def show_card_stats(card):
+def show_card_stats(card, unseen_compat):
     stats = {}
+
+    unseen = (card.grade == -1)
+    if unseen_compat and unseen:
+        card.grade = max(0, card.grade)
+        card.acq_reps = max(0, card.acq_reps)
+        card.acq_reps_since_lapse = max(0, card.acq_reps_since_lapse)
+        card.last_rep = max(0, card.last_rep)
+        card.next_rep = max(0, card.next_rep)
+
     for f in learning_data:
         if f == 'easiness':
             stats[f] = int(round(card.easiness * easiness_accuracy))
         elif f == 'unseen':
-            stats[f] = int(card.active == 1 and card.grade == -1)
+            stats[f] = int(unseen)
         elif f == 'last_rep' or f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
             # seconds
@@ -126,7 +135,7 @@ def show_card(card):
                                  last_rep_to_interval(card.last_rep))
     print "next_rep: %s (%d)" % (card.next_rep,
                                  next_rep_to_interval(card.next_rep))
-    print "unseen: %d" % (card.active == 1 and card.grade == -1)
+    print "unseen: %d" % card.grade == -1
     print "tags: %s" % (", ". join(map(lambda t : "'%s'" % t.name, card.tags)))
 
 def ignore_method(self, *args, **kwargs):
@@ -149,11 +158,14 @@ def main():
                       action="store_true", help="show card content")
     parser.add_option("-s", "--stats", dest="show_stats",
                       action="store_true", help="show stat lines")
+    parser.add_option("-u", "--unseen", dest="unseen_compatability",
+                      action="store_true", help="unseen stats as in 1.x")
     (options, args) = parser.parse_args()
 
     only_tags = set([s.strip() for s
                      in options.only_tags.split(',')
                      if s.strip()])
+    if options.unseen_compatability: options.show_stats = True
 
     data_dir = None
     if options.data_dir != None:
@@ -179,7 +191,7 @@ def main():
         ]:
         ms.components.append(c)
 
-    ms.initialise(data_dir, filename)
+    ms.initialise(data_dir, filename, automatic_upgrades=False)
     ms.review_controller().reset()
 
     db = ms.database()
@@ -197,7 +209,7 @@ def main():
                 or only_tags.intersection({ t.name for t in card.tags})):
 
             if options.show_stats:
-                show_card_stats(card)
+                show_card_stats(card, options.unseen_compatability)
             else:
                 print "--------------------%s (%s)" % (_card_id, _fact_id)
                 show_card(card)
