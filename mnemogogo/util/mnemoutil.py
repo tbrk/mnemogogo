@@ -90,7 +90,7 @@ learning_data_len = {
 
 easiness_accuracy = 1000
 
-def show_card_stats(card, unseen_compat):
+def show_card_stats(card, unseen_compat, day_starts_at = 3):
     stats = {}
 
     unseen = (card.grade == -1)
@@ -106,10 +106,10 @@ def show_card_stats(card, unseen_compat):
             stats[f] = int(round(card.easiness * easiness_accuracy))
         elif f == 'unseen':
             stats[f] = int(unseen)
-        elif f == 'last_rep' or f == 'next_rep':
+        elif unseen_compat and (f == 'last_rep' or f == 'next_rep'):
             # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
             # seconds
-            stats[f] = int(getattr(card, f) / DAY)
+            stats[f] = int((getattr(card, f) - day_starts_at * HOUR) / DAY)
         else:
             stats[f] = int(getattr(card, f))
 
@@ -209,7 +209,9 @@ def main():
                 or only_tags.intersection({ t.name for t in card.tags})):
 
             if options.show_stats:
-                show_card_stats(card, options.unseen_compatability)
+                show_card_stats(card,
+                                unseen_compat=options.unseen_compatability,
+                                day_starts_at=config['day_starts_at'])
             else:
                 print "--------------------%s (%s)" % (_card_id, _fact_id)
                 show_card(card)

@@ -36,7 +36,8 @@ interface_classes = []
 
 _logger = None
 max_config_size = 50
-DAY = 86400
+HOUR = 60 * 60
+DAY = 24 * HOUR
 
 def set_logger(new_logger):
     global _logger
@@ -483,7 +484,7 @@ def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
 
     return cards
 
-def card_to_stats(card, unseen_compat):
+def card_to_stats(card, unseen_compat=True, day_starts_at=3):
     stats = {}
     for f in learning_data:
         if f == 'easiness':
@@ -493,7 +494,7 @@ def card_to_stats(card, unseen_compat):
         elif f == 'last_rep' or f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
             # seconds
-            stats[f] = int(getattr(card, f) / DAY)
+            stats[f] = int((getattr(card, f) - day_starts_at * HOUR) / DAY)
         else:
             stats[f] = int(getattr(card, f))
 
@@ -506,12 +507,16 @@ def card_to_stats(card, unseen_compat):
 
     return stats
 
-def stats_to_card(stats, card):
+def stats_to_card(stats, card, day_starts_at = 3):
     for f in learning_data:
         if f == 'easiness':
             card.easiness = float(stats[f]) / easiness_accuracy
         elif f == 'unseen':
             pass
+        elif f == 'last_rep' or f == 'next_rep':
+            # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
+            # seconds
+            stats[f] = getattr(card, f) * DAY + day_starts_at * HOUR
         else:
             setattr(card, f, int(stats[f]))
 
@@ -553,7 +558,8 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
     exporter.write_config(config)
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
-        stats = card_to_stats(card, unseen_compat=True)
+        stats = card_to_stats(card, unseen_compat=True,
+                              day_starts_at=mnemoconfig["day_starts_at"])
 
         q = card.question(render_chain="mnemogogo")
         a = card.answer(render_chain="mnemogogo")
@@ -683,7 +689,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
         if card.unseen: continue
-        stats_to_card(stats, card)
+        stats_to_card(stats, card, day_starts_at=mnemoconfig["day_starts_at"])
         mnemodb.update_card(card, repetition_only=True)
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),
