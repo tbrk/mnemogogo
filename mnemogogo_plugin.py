@@ -35,8 +35,16 @@ from mnemosyne.libmnemosyne.criterion import Criterion
 from mnemosyne.pyqt_ui.review_wdgt import ReviewWdgt
 from mnemosyne.libmnemosyne.ui_components.configuration_widget \
     import ConfigurationWidget
-from mnemosyne.libmnemosyne.render_chains.default_render_chain \
-    import DefaultRenderChain
+
+# for MnemogogoRenderChain
+from mnemosyne.libmnemosyne.filters.latex import Latex
+from mnemosyne.libmnemosyne.render_chain import RenderChain
+from mnemosyne.libmnemosyne.renderers.plain_text import PlainText
+from mnemosyne.libmnemosyne.filters.html5_media import Html5Media
+from mnemosyne.libmnemosyne.filters.expand_paths import ExpandPaths
+from mnemosyne.libmnemosyne.filters.escape_to_html import EscapeToHtml
+from mnemosyne.libmnemosyne.filters.non_latin_font_size_increase import \
+     NonLatinFontSizeIncrease
 
 import sys, copy
 from os.path import exists, join
@@ -61,8 +69,11 @@ class MnemogogoConfig(Hook):
     def run(self):
         pass
 
-class MnemogogoRenderChain(DefaultRenderChain):
+class MnemogogoRenderChain(RenderChain):
     id = "mnemogogo"
+    filters = [EscapeToHtml, Latex, ExpandPaths, Html5Media,
+               NonLatinFontSizeIncrease]
+    renderers = [PlainText]
 
 class MnemogogoReviewWdgt(ReviewWdgt):
     plugin = None

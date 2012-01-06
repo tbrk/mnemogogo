@@ -131,11 +131,15 @@ def show_card(card):
         ]:
         print "%s: %s" % (attr, getattr(card, attr))
 
-    print "last_rep: %s (%d)" % (card.last_rep,
-                                 last_rep_to_interval(card.last_rep))
-    print "next_rep: %s (%d)" % (card.next_rep,
-                                 next_rep_to_interval(card.next_rep))
-    print "unseen: %d" % card.grade == -1
+    print "last_rep: %s (%d, %s)" % (card.last_rep,
+                last_rep_to_interval(card.last_rep),
+                datetime.date.fromtimestamp(adjusted_now(card.last_rep)))
+
+    print "next_rep: %s (%d, %s)" % (card.next_rep,
+                next_rep_to_interval(card.next_rep),
+                datetime.date.fromtimestamp(adjusted_now(card.next_rep)))
+
+    print "unseen: %d" % (card.grade == -1)
     print "tags: %s" % (", ". join(map(lambda t : "'%s'" % t.name, card.tags)))
 
 def ignore_method(self, *args, **kwargs):
@@ -156,6 +160,8 @@ def main():
                       help="limit to given tags", default="")
     parser.add_option("-c", "--content", dest="show_content",
                       action="store_true", help="show card content")
+    parser.add_option("--render-chain", dest="render_chain",
+                      default="plain_text", help="set the render chain")
     parser.add_option("-s", "--stats", dest="show_stats",
                       action="store_true", help="show stat lines")
     parser.add_option("-u", "--unseen", dest="unseen_compatability",
@@ -218,11 +224,11 @@ def main():
 
             if options.show_content:
                 print "question:",
-                print card.question(render_chain="default").replace("\n",
-                            "\n|").encode('utf-8')
+                print card.question(render_chain=options.render_chain) \
+                        .replace("\n", "\n|").encode('utf-8')
                 print "answer:",
-                print card.answer(render_chain="default").replace("\n",
-                            "\n|").encode('utf-8')
+                print card.answer(render_chain=options.render_chain) \
+                        .replace("\n", "\n|").encode('utf-8')
 
             count += 1
 

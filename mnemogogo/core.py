@@ -516,9 +516,18 @@ def stats_to_card(stats, card, day_starts_at = 3):
         elif f == 'last_rep' or f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
             # seconds
-            stats[f] = getattr(card, f) * DAY + day_starts_at * HOUR
+            setattr(card, f, stats[f] * DAY + day_starts_at * HOUR)
         else:
             setattr(card, f, int(stats[f]))
+
+def dictlist(keyvals):
+    r = {}
+    for k, v in keyvals:
+        if k in r:
+            r[k].append(v)
+        else:
+            r[k] = [v]
+    return r
 
 def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
               progress_bar=None, extra = 1.00, max_width = 240,
@@ -548,13 +557,14 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
                             int(mnemoconfig["day_starts_at"]), grade_0_at_once)
     card_ids = [ card_id for card_id, fact_id in cards ]
     card_to_fact = dict(cards)
-    fact_to_card = dict((v, k) for k, v in cards)
+    fact_to_card = dictlist((v, k) for k, v in cards)
 
     total = len(cards)
     current = 0
 
     exporter.open(datetime.date.fromtimestamp(0), num_days, total, params)
-    exporter.id_to_serial = dict(zip(card_ids, range(0, total)))
+    exporter.id_to_serial = dict(zip((str(i) for i in card_ids),
+                                 range(0, total)))
     exporter.write_config(config)
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
@@ -566,7 +576,8 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
         is_overlay = card.fact_view.a_on_top_of_q
 
         try:
-            inverse_id = fact_to_card[card_to_fact[card_id]]
+            inverse_id = [ i for i in fact_to_card[card_to_fact[card_id]]
+                             if i != card_id ][0]
         except KeyError:
             inverse_id = None
 
@@ -688,7 +699,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
 
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
-        if card.unseen: continue
+        if stats['unseen']: continue
         stats_to_card(stats, card, day_starts_at=mnemoconfig["day_starts_at"])
         mnemodb.update_card(card, repetition_only=True)
 
