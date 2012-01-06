@@ -24,7 +24,7 @@ import re
 import itertools
 import random
 import traceback
-import time, datetime
+import time, datetime, calendar
 
 interface_classes = []
 
@@ -425,7 +425,7 @@ def adjusted_now(now=None, day_starts_at = 3):
 
     if now == None:
         now = time.time()
-    now -= day_starts_at * 60 * 60 
+    now -= day_starts_at * HOUR
     if time.daylight:
         now -= time.altzone
     else:
@@ -484,17 +484,28 @@ def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
 
     return cards
 
-def card_to_stats(card, unseen_compat=True, day_starts_at=3):
+def card_to_stats(card, unseen_compat=True):
     stats = {}
     for f in learning_data:
         if f == 'easiness':
             stats[f] = int(round(card.easiness * easiness_accuracy))
         elif f == 'unseen':
             stats[f] = int(card.grade == -1)
-        elif f == 'last_rep' or f == 'next_rep':
-            # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
-            # seconds
-            stats[f] = int((getattr(card, f) - day_starts_at * HOUR) / DAY)
+        elif f == 'last_rep':
+            # Compatibility with Mnemosyne 1.x: last_rep in days, not
+            # seconds; last_rep is UTC, so we must convert it to local time.
+            # Imagine that we last saw a card in Sydney at: 1325807500
+            #   UTC:            2012-01-05 23:51    (stored in db)
+            #   local (UTC+10): 2012-01-06 10:51
+            # When we reduce this time stamp to days since the epoch in local
+            # time, we want 0x3bf1 (Jan-6) not 0x3bf0 (Jan-5).
+            localtime = calendar.timegm(time.localtime(getattr(card, f)))
+            stats[f] = int(localtime / DAY)
+        elif f == 'next_rep':
+            # Compatibility with Mnemosyne 1.x: next_rep in days, not
+            # seconds; next_rep is always midnight (UTC) of the day when a
+            # repetition is due, so we do not convert to local time.
+            stats[f] = int(getattr(card, f) / DAY)
         else:
             stats[f] = int(getattr(card, f))
 
@@ -507,16 +518,24 @@ def card_to_stats(card, unseen_compat=True, day_starts_at=3):
 
     return stats
 
-def stats_to_card(stats, card, day_starts_at = 3):
+def stats_to_card(stats, card):
     for f in learning_data:
         if f == 'easiness':
             card.easiness = float(stats[f]) / easiness_accuracy
         elif f == 'unseen':
             pass
-        elif f == 'last_rep' or f == 'next_rep':
-            # Compatibility with Mnemosyne 1.x: last_rep/next_rep in days, not
-            # seconds
-            setattr(card, f, stats[f] * DAY + day_starts_at * HOUR)
+        elif f == 'last_rep':
+            # Compatibility with Mnemosyne 1.x: last_rep in days, not seconds.
+            # The value being imported is the number of days since 1970-01-01.
+            # We assume that the review took place at 5pm local time before
+            # converting to UTC.
+            timestamp = time.mktime(time.gmtime(stats[f] * DAY + 17 * HOUR))
+            setattr(card, f, timestamp)
+        elif f == 'next_rep':
+            # Compatibility with Mnemosyne 1.x: next_rep in days, not seconds.
+            # Multiplying by DAY gives midnight UTC on the scheduled day as
+            # required.
+            setattr(card, f, stats[f] * DAY)
         else:
             setattr(card, f, int(stats[f]))
 
@@ -568,8 +587,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
     exporter.write_config(config)
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
-        stats = card_to_stats(card, unseen_compat=True,
-                              day_starts_at=mnemoconfig["day_starts_at"])
+        stats = card_to_stats(card, unseen_compat=True)
 
         q = card.question(render_chain="mnemogogo")
         a = card.answer(render_chain="mnemogogo")
@@ -700,7 +718,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
         if stats['unseen']: continue
-        stats_to_card(stats, card, day_starts_at=mnemoconfig["day_starts_at"])
+        stats_to_card(stats, card)
         mnemodb.update_card(card, repetition_only=True)
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),

@@ -131,11 +131,13 @@ def show_card(card):
         ]:
         print "%s: %s" % (attr, getattr(card, attr))
 
-    print "last_rep: %s (%d, %s)" % (card.last_rep,
+    print "last_rep: 0x%8x [0x%4x] (%d, %s)" % (
+                card.last_rep, card.last_rep / DAY,
                 last_rep_to_interval(card.last_rep),
                 datetime.date.fromtimestamp(adjusted_now(card.last_rep)))
 
-    print "next_rep: %s (%d, %s)" % (card.next_rep,
+    print "next_rep: 0x%8x [0x%4x] (%d, %s)" % (
+                card.next_rep, card.next_rep / DAY,
                 next_rep_to_interval(card.next_rep),
                 datetime.date.fromtimestamp(adjusted_now(card.next_rep)))
 
