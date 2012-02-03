@@ -421,32 +421,20 @@ def list_interfaces():
 # These utility functions were modified from Mnemosyne 2.x code
 # originally written by <Peter.Bienstman@UGent.be>.
 
-def adjusted_now(now=None, day_starts_at = 3):
+def midnight_UTC(timestamp):        
+    date_only = datetime.date.fromtimestamp(timestamp).timetuple()
+    return int(calendar.timegm(date_only))
 
+def adjusted_now(now=None, day_starts_at = 3):
     if now == None:
         now = time.time()
     now -= day_starts_at * HOUR
-    if time.daylight:
+
+    if time.localtime(now).tm_isdst and time.daylight:
         now -= time.altzone
     else:
         now -= time.timezone
     return int(now)
-
-def midnight_UTC(timestamp):        
-    date_only = datetime.date.fromtimestamp(timestamp)
-    return int(calendar.timegm(date_only.timetuple()))
-
-def next_rep_to_interval(next_rep, now=None):
-    if now is None:
-        now = adjusted_now()
-    return (next_rep - now) / DAY
-
-def last_rep_to_interval(last_rep, now=None):
-    if now is None:
-        now = adjusted_now()
-    now = midnight_UTC(now)
-    last_rep = midnight_UTC(adjusted_now(now=last_rep))
-    return (last_rep - now) / DAY
 
 # Return enough cards for rebuild_revision_queue on the mobile device to
 # work with for the given number of days.
@@ -499,8 +487,8 @@ def card_to_stats(card, unseen_compat=True):
             #   local (UTC+10): 2012-01-06 10:51
             # When we reduce this time stamp to days since the epoch in local
             # time, we want 0x3bf1 (Jan-6) not 0x3bf0 (Jan-5).
-            localtime = calendar.timegm(time.localtime(getattr(card, f)))
-            stats[f] = int(localtime / DAY)
+            local = datetime.date.fromtimestamp(getattr(card, f)).timetuple()
+            stats[f] = int(calendar.timegm(local) / DAY)
         elif f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: next_rep in days, not
             # seconds; next_rep is always midnight (UTC) of the day when a
@@ -518,7 +506,7 @@ def card_to_stats(card, unseen_compat=True):
 
     return stats
 
-def stats_to_card(stats, card):
+def stats_to_card(stats, card, day_starts_at=3):
     for f in learning_data:
         if f == 'easiness':
             card.easiness = float(stats[f]) / easiness_accuracy
@@ -527,10 +515,15 @@ def stats_to_card(stats, card):
         elif f == 'last_rep':
             # Compatibility with Mnemosyne 1.x: last_rep in days, not seconds.
             # The value being imported is the number of days since 1970-01-01.
-            # We assume that the review took place at 5pm local time before
-            # converting to UTC.
-            timestamp = time.mktime(time.gmtime(stats[f] * DAY + 17 * HOUR))
+            # We assume that the review took place at the time of import.
+    
+            if time.daylight:
+                tzoff = -time.altzone
+            else:
+                tzoff = -time.timezone
+            timestamp = stats[f] * DAY + tzoff + day_starts_at * HOUR
             setattr(card, f, timestamp)
+
         elif f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: next_rep in days, not seconds.
             # Multiplying by DAY gives midnight UTC on the scheduled day as
@@ -559,7 +552,10 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
     exporter.progress_bar = progress_bar
 
     grade_0_at_once = mnemoconfig["non_memorised_cards_in_hand"]
+    day_starts_at = mnemoconfig["day_starts_at"]
+
     config = {
+            'day_starts_at' : day_starts_at,
             'grade_0_items_at_once' : grade_0_at_once,
             'logging' : "1",
             'database'
@@ -695,6 +691,11 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
                     + curr_database
                     + "'!")
  
+    if import_config.has_key('day_starts_at'):
+        day_starts_at = int(import_config['day_starts_at'])
+    else:
+        day_starts_at = int(mnemoconfig['day_starts_at'])
+
     new_stats = []
     to_user = {}
     rep_data = {}
@@ -718,7 +719,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
     # Only update the database if the entire read is successful
     for (card, stats) in new_stats:
         if stats['unseen']: continue
-        stats_to_card(stats, card)
+        stats_to_card(stats, card, day_starts_at)
         mnemodb.update_card(card, repetition_only=True)
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),

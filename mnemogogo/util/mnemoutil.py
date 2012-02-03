@@ -23,21 +23,22 @@ class ReviewWdgt(ReviewWidget):
     def redraw_now(self):
         pass
 
+def midnight_UTC(timestamp):        
+    date_only = datetime.date.fromtimestamp(timestamp).timetuple()
+    return int(calendar.timegm(date_only))
+
 def adjusted_now(now=None):
     global config
 
     if now == None:
         now = time.time()
-    now -= int(config["day_starts_at"]) * HOUR 
-    if time.daylight:
+    now -= config["day_starts_at"] * HOUR
+
+    if time.localtime(now).tm_isdst and time.daylight:
         now -= time.altzone
     else:
         now -= time.timezone
     return int(now)
-
-def midnight_UTC(timestamp):        
-    date_only = datetime.date.fromtimestamp(timestamp)
-    return int(calendar.timegm(date_only.timetuple()))
 
 def next_rep_to_interval(next_rep, now=None):
     if now is None:
@@ -48,9 +49,9 @@ def last_rep_to_interval(last_rep, now=None):
     global config
 
     if now is None:
-        now = adjusted_now()
-    now = midnight_UTC(now)
-    last_rep = midnight_UTC(adjusted_now(now=last_rep))
+        now = time.time()
+    now = midnight_UTC(now - config["day_starts_at"] * HOUR)
+    last_rep = midnight_UTC(last_rep - config["day_starts_at"] * HOUR)
     return (last_rep - now) / DAY
 
 def show_info(ms):
@@ -208,7 +209,7 @@ def main():
     if not options.show_stats:
         show_info(ms)
 
-    cards = db.all_cards()
+    cards = db.cards()
     count = 0
     for _card_id, _fact_id in cards:
         card = db.card(_card_id, is_id_internal=True)
