@@ -167,7 +167,6 @@ class MnemogogoPlugin(Plugin):
         self.config()[self.config_key] = copy.copy(self.settings)
 
     def open_dialog(self):
-
         mobile_before = self.settings['mode'] == 'mobile'
 
         self.gogo_dlg.configure(self.settings, self.config(), self.database(),
@@ -233,7 +232,7 @@ class MnemogogoPlugin(Plugin):
                 widget.answer.unlockAndRestore()
                 widget.answer_label.unlockAndRestore()
                 widget.gogoinfo.hide()
-        except:
+        except Exception as e:
             pass
 
     def __init__(self, component_manager):
@@ -276,6 +275,7 @@ class MnemogogoPlugin(Plugin):
                 triggered=self.open_dialog)
 
         self.main_widget().menu_Cards.addAction(self.menu_action)
+        self.review_controller().reset()
 
         self.load_config()
         if self.settings['mode'] == 'mobile':
