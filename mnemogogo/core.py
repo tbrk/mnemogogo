@@ -25,6 +25,7 @@ import itertools
 import random
 import traceback
 import time, datetime, calendar
+from PyQt4.QtGui import QImage
 
 interface_classes = []
 
@@ -122,14 +123,14 @@ class Export(Job):
     re_img_split = re.compile(r'(<img.*?>)')
     re_img = re.compile( r'(?P<all>(?P<before><img\s+[^>]?)'
                         + '((height|width)\s*=\s*"?[0-9]*"?\s*)*'
-                        + 'src\s*=\s*"(?P<path>[^"]*)"'
+                        + 'src\s*=\s*"(file:\\\\\\\\\\\\)?(?P<path>[^"]*)"'
                         + '((height|width)\s*=\s*"?[0-9]*"?)*'
                         + '(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
-    re_snd_split = re.compile(r'(<sound.*?>)')
-    re_snd = re.compile( r'(?P<all>(?P<before><sound\s+[^>]?)'
-                        + 'src\s*=\s*"(?P<path>[^"]*)"'
+    re_snd_split = re.compile(r'(<audio.*?>)')
+    re_snd = re.compile( r'(?P<all>(?P<before><audio\s+[^>]?)'
+                        + 'src\s*=\s*"(file:\\\\\\\\\\\\)(?P<path>[^"]*)"'
                         + '(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
