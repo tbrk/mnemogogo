@@ -275,7 +275,10 @@ class MnemogogoPlugin(Plugin):
                 triggered=self.open_dialog)
 
         self.main_widget().menu_Cards.addAction(self.menu_action)
-        self.review_controller().reset()
+        try:
+            self.review_controller().reset()
+        except:
+            pass
 
         self.load_config()
         if self.settings['mode'] == 'mobile':
