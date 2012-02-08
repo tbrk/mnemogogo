@@ -618,7 +618,7 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
     # Parse chunk.
     blocks = repetition_chunk.split(" | ")
     logtype, card_id, grade, easiness = blocks[0].split(" ")
-    if card_id not in to_user: return
+    if not to_user.has_key(card_id): return
 
     grade = int(grade)
     easiness = float(easiness)
@@ -704,8 +704,8 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
         try:
             card = mnemodb.card(card_id, is_id_internal=True)
 
-            to_user[card._id] = card.id
-            rep_data[card._id] = (card.last_rep, card.next_rep)
+            to_user[str(card._id)] = card.id
+            rep_data[str(card._id)] = (card.last_rep, card.next_rep)
         except:
             card = None
 

@@ -184,8 +184,7 @@ class Import(mnemogogo.Import):
         prelog_path = join(self.sync_path, 'PRELOG')
         postlog_path = join(self.sync_path, 'LOG')
 
-        if not exists(prelog_path):
-            return
+        if not exists(prelog_path): return
 
         prelog = open(prelog_path, 'r')
         postlog = open(postlog_path, 'w')
