@@ -505,6 +505,8 @@ public class Card
             acq_reps = 1;
             acq_reps_since_lapse = 1;
 
+            actual_interval = 0;
+
             new_interval = initial_interval[new_grade];
 
         } else if (grade < 2 && new_grade < 2) {

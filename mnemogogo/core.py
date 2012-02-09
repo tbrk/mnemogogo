@@ -34,6 +34,8 @@ interface_classes = []
 #   (see card_to_stats and log_repetition)
 #   - add a config entry: file_format = 1.0 or 2.0, default to 1.0
 #   - add a dropdown entry to select the new client? or a note?
+# * 2.x: need to log last_rep and next_rep to avoid calculating them and
+#        fix the inaccuracy for never-reviewed cards
 
 _logger = None
 max_config_size = 50
@@ -647,27 +649,37 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
         scheduled_interval *= DAY
         new_interval       *= DAY
 
-        try:
-            last_rep, next_rep = rep_data[card_id]
-
-            if next_rep - last_rep != scheduled_interval:
-                logger().log_info(
-                    "Invalid scheduled_interval: %s next=%d last=%d interval=%d" % (
-                        card_id, next_rep, last_rep, scheduled_interval))
-                raise Exception
-
-            else:
-                timestamp = last_rep + actual_interval
-
-                last_rep = timestamp
-                next_rep = timestamp + new_interval
-                rep_data[card_id] = (last_rep, next_rep)
-
-        except:
+        if acq_reps == 1 and ret_reps == 0: # first repetition of new card
             timestamp = time.time()
             actual_interval = 0
+
+            # these values are wrong, but it's not clear how to do anything
+            # better in general (maybe keep the timestamp of the previous card?)
             last_rep = 0
-            next_rep = 0
+            next_rep = timestamp + new_interval
+
+        else:
+            try:
+                last_rep, next_rep = rep_data[card_id]
+
+                if next_rep - last_rep != scheduled_interval:
+                    logger().log_info(
+                        "Invalid scheduled_interval: %s next=%d last=%d interval=%d" % (
+                            card_id, next_rep, last_rep, scheduled_interval))
+                    raise Exception
+
+                else:
+                    timestamp = last_rep + actual_interval
+
+                    last_rep = timestamp
+                    next_rep = timestamp + new_interval
+                    rep_data[card_id] = (last_rep, next_rep)
+
+            except:
+                timestamp = time.time()
+                actual_interval = 0
+                last_rep = 0
+                next_rep = 0
 
     # Note: we bypass the Logger.repetition() interface because that routine
     #       does not allow us to pass a timestamp.
