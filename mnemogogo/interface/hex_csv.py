@@ -87,7 +87,6 @@ class BasicExport(mnemogogo.Export):
         self.serial_num = 0
 
     def close(self):
-
         catfile = codecs.open(join(self.sync_path, 'CATS'),
                               'w', encoding='UTF-8')
 
@@ -106,6 +105,11 @@ class BasicExport(mnemogogo.Export):
 
         self.tidy_images('IMG')
         self.tidy_sounds('SND')
+
+        try:
+            open(join(self.img_path, '.nomedia'), 'w').close()
+            open(join(self.snd_path, '.nomedia'), 'w').close()
+        except: pass
     
     def write_config(self, config):
         cfile = open(join(self.sync_path, 'CONFIG'), 'wb')
