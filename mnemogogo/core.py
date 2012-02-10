@@ -595,8 +595,8 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
         try:
             inverse_id = [ i for i in fact_to_card[card_to_fact[card_id]]
                              if i != card_id ][0]
-        except KeyError:
-            inverse_id = None
+        except KeyError: inverse_id = None
+        except IndexError: inverse_id = None
 
         try:
             category = [t.name for t in card.tags][0]
