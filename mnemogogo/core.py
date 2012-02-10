@@ -238,7 +238,7 @@ class Export(Job):
         
         ratio = max(wratio, hratio)
         if ratio != 1.0:
-            im = im.smoothScale(int(width / ratio), int(height / ratio))
+            im = im.scaled(int(width / ratio), int(height / ratio))
             (width, height) = (im.width(), im.height())
         
         if self.img_max_size:
@@ -262,7 +262,7 @@ class Export(Job):
                     scale = scale - .1
 
                 if nwidth > 0 and nheight > 0:
-                    im = im.smoothScale(nwidth, nheight)
+                    im = im.scaled(nwidth, nheight)
                     im.save(tmpdst, 'PNG')
                 else:
                     break;
