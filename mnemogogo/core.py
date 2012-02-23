@@ -686,8 +686,8 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
     mnemodb.log_repetition(timestamp, to_user[card_id], grade,
         easiness, acq_reps, ret_reps, lapses,
         acq_reps_since_lapse, ret_reps_since_lapse,
-        scheduled_interval, actual_interval, new_interval,
-        thinking_time, last_rep, next_rep, scheduler_data=0)
+        scheduled_interval, actual_interval,
+        thinking_time, next_rep, scheduler_data=0)
 
 def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
     importer = interface.start_import(sync_path)
