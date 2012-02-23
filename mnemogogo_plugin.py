@@ -75,6 +75,14 @@ class MnemogogoRenderChain(RenderChain):
                NonLatinFontSizeIncrease]
     renderers = [PlainText]
 
+    def __init__(self, component_manager):
+        RenderChain.__init__(self, component_manager)
+
+        for plugin in self.component_manager.all("plugin"):
+            try:
+                plugin.new_render_chain(id)
+            except: pass
+
 class MnemogogoReviewWdgt(ReviewWdgt):
     plugin = None
 
