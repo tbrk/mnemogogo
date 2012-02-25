@@ -108,10 +108,11 @@ class Job:
     learning_data = learning_data
     learning_data_len = learning_data_len
 
-    def __init__(self, interface, sync_path):
+    def __init__(self, interface, sync_path, debug):
         self.interface = interface
         self.sync_path = sync_path
         self.percentage_complete = 0
+        self.debug = debug
 
     # implement in plugin
     def close(self):
@@ -136,8 +137,8 @@ class Export(Job):
                         + '(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
-    def __init__(self, interface, sync_path):
-        Job.__init__(self, interface, sync_path)
+    def __init__(self, interface, sync_path, debug):
+        Job.__init__(self, interface, sync_path, debug)
 
         self.categories = []
         self.imgs = {}
@@ -289,6 +290,7 @@ class Export(Job):
             src = r.group('path')
 
             if not (src in self.imgs):
+                self.debug("gogo:img: processing %s" % src)
                 (src_dir, src_base) = os.path.split(src)
                 (src_root, src_ext) = os.path.splitext(src_base)
                 if self.name_with_numbers:
@@ -300,6 +302,7 @@ class Export(Job):
 
                 (moved, dst) = self.convert_img(src, dst_subdir, name,
                         self.img_to_ext)
+                self.debug("gogo:img: moved to %s" % dst)
 
                 self.imgs[src] = phonejoin([dst_subdir, dst])
 
@@ -376,11 +379,11 @@ class Interface:
     def unload(self):
         pass
 
-    def start_export(self, sync_path):
-        return Export(self, sync_path)
+    def start_export(self, sync_path, debug):
+        return Export(self, sync_path, debug)
 
-    def start_import(self, sync_path):
-        return Import(self, sync_path)
+    def start_import(self, sync_path, debug):
+        return Import(self, sync_path, debug)
 
 
 ######################################################################
@@ -544,13 +547,13 @@ def dictlist(keyvals):
             r[k] = [v]
     return r
 
-def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig,
+def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
               progress_bar=None, extra = 1.00, max_width = 240,
               max_height = 300, max_size = 64):
 
     basedir = mnemoconfig.data_dir
 
-    exporter = interface.start_export(sync_path)
+    exporter = interface.start_export(sync_path, debug_print)
     exporter.gogo_dir = unicode(os.path.join(basedir, "plugins", "mnemogogo"))
     exporter.progress_bar = progress_bar
 
@@ -689,8 +692,9 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
         scheduled_interval, actual_interval,
         thinking_time, next_rep, scheduler_data=0)
 
-def do_import(interface, sync_path, mnemodb, mnemoconfig, progress_bar=None):
-    importer = interface.start_import(sync_path)
+def do_import(interface, sync_path, mnemodb, mnemoconfig,
+              debug_print, progress_bar=None):
+    importer = interface.start_import(sync_path, debug_print)
     importer.progress_bar = progress_bar
 
     import_config = importer.read_config()

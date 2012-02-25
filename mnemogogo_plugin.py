@@ -180,7 +180,8 @@ class MnemogogoPlugin(Plugin):
         mobile_before = self.settings['mode'] == 'mobile'
 
         self.gogo_dlg.configure(self.settings, self.config(), self.database(),
-                                self.review_controller())
+                                self.review_controller(),
+                                self.component_manager.debug)
         self.gogo_dlg.exec_()
         self.settings = self.gogo_dlg.settings
 

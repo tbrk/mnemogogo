@@ -44,6 +44,7 @@ class BasicExport(mnemogogo.Export):
         pass
 
     def open(self, start_date, num_days, num_cards, params):
+        self.debug("gogo: export %d days to %s." % (num_days, self.sync_path))
         if not exists(self.sync_path): mkdir(self.sync_path)
         self.num_cards = num_cards
 
@@ -110,6 +111,8 @@ class BasicExport(mnemogogo.Export):
             open(join(self.img_path, '.nomedia'), 'w').close()
             open(join(self.snd_path, '.nomedia'), 'w').close()
         except: pass
+
+        self.debug("gogo: export complete.")
     
     def write_config(self, config):
         cfile = open(join(self.sync_path, 'CONFIG'), 'wb')
@@ -355,15 +358,15 @@ class JojoHexCsv(mnemogogo.Interface):
     description = ('Mnemojojo (J2ME)')
     version = '1.0.0'
 
-    def start_export(self, sync_path):
-        e = JojoExport(self, sync_path)
+    def start_export(self, sync_path, debug):
+        e = JojoExport(self, sync_path, debug)
         e.img_to_landscape = False
         e.img_to_ext = self.ext
         e.name_with_numbers = False
         return e
 
-    def start_import(self, sync_path):
-        return Import(self, sync_path)
+    def start_import(self, sync_path, debug):
+        return Import(self, sync_path, debug)
 
 class DodoHexCsv(mnemogogo.Interface):
     ext = 'PNG'
@@ -371,13 +374,13 @@ class DodoHexCsv(mnemogogo.Interface):
     description = ('Mnemododo (Android)')
     version = '1.0.0'
 
-    def start_export(self, sync_path):
-        e = JojoExport(self, sync_path)
+    def start_export(self, sync_path, debug):
+        e = JojoExport(self, sync_path, debug)
         e.img_to_landscape = False
         e.img_to_ext = self.ext
         e.name_with_numbers = False
         return e
 
-    def start_import(self, sync_path):
-        return Import(self, sync_path)
+    def start_import(self, sync_path, debug):
+        return Import(self, sync_path, debug)
 

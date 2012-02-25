@@ -150,12 +150,12 @@ class GogoDlg(QDialog):
                 self.settings['sync_path'],
                 self.mnemosyne_database,
                 self.mnemosyne_config,
+                self.mnemosyne_debug,
                 self.ui.progressBar,
                 self.settings['extra_factor'],
                 self.settings['max_width'],
                 self.settings['max_height'],
-                self.settings['max_size']
-                )
+                self.settings['max_size'])
             self.setMobile()
             if logger().check_log_status():
                 self.showWarning(
@@ -180,6 +180,7 @@ class GogoDlg(QDialog):
                 self.settings['sync_path'],
                 self.mnemosyne_database,
                 self.mnemosyne_config,
+                self.mnemosyne_debug,
                 self.ui.progressBar)
             self.setLocal()
 
@@ -213,10 +214,11 @@ class GogoDlg(QDialog):
             self.ui.syncPath.setText(d)
     
     def configure(self, settings, mnemosyne_config, database,
-                  review_controller):
+                  review_controller, debug_print):
         self.mnemosyne_config = mnemosyne_config
         self.mnemosyne_database = database
         self.mnemosyne_revcontroller = review_controller
+        self.mnemosyne_debug = debug_print
 
         if settings.has_key('mode'):
             self.mode = settings['mode']
