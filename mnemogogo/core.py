@@ -296,7 +296,9 @@ class Export(Job):
                 if self.name_with_numbers:
                     name = '%08X' % self.img_cnt
                 else:
-                    name = src_root.encode('punycode').upper().replace(' ', '_')
+                    name = src_root.encode('punycode').upper()\
+                                .replace(' ', '_')\
+                                .replace('?', '_qu-')
                     name = name + self.directory_index(src_dir)
                 self.img_cnt += 1
 
