@@ -59,12 +59,13 @@ def _removeLocking(self):
 def add(obj):
     dict = obj.__class__.__dict__
 
-    obj._status = obj.isEnabled()
-    obj._locked = False
+    if not hasattr(obj, "_locked"):
+        obj._status = obj.isEnabled()
+        obj._locked = False
 
-    obj._setEnabled = obj.setEnabled
-    obj.setEnabled = types.MethodType(_setEnabledWithLocking, obj)
-    obj.disableAndLock = types.MethodType(_disableAndLock, obj)
-    obj.unlockAndRestore = types.MethodType(_unlockAndRestore, obj)
-    obj.removeLocking = types.MethodType(_removeLocking, obj)
+        obj._setEnabled = obj.setEnabled
+        obj.setEnabled = types.MethodType(_setEnabledWithLocking, obj)
+        obj.disableAndLock = types.MethodType(_disableAndLock, obj)
+        obj.unlockAndRestore = types.MethodType(_unlockAndRestore, obj)
+        obj.removeLocking = types.MethodType(_removeLocking, obj)
 
