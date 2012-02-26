@@ -319,6 +319,7 @@ class Export(Job):
             if src in self.snds:
                 ntext.append('<sound src="%s" />' % self.snds[src])
             else:
+                self.debug("gogo:snd: processing %s" % src)
                 (src_dir, src_base) = os.path.split(src)
                 (src_root, src_ext) = os.path.splitext(src_base)
                 if self.name_with_numbers:
@@ -332,6 +333,7 @@ class Export(Job):
                 dst_path = os.path.join(self.sync_path, dst_subdir, dst)
                 try:
                     shutil.copy(src, dst_path)
+                    self.debug("gogo:snd: copied to %s" % dst_path)
                     self.snds[src] = phonejoin([dst_subdir, dst])
                     ntext.append('<sound src="%s" />' % self.snds[src])
 
