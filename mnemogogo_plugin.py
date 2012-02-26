@@ -247,7 +247,7 @@ class MnemogogoPlugin(Plugin):
                 main_widget.actionActivatePlugins.unlockAndRestore()
 
         except Exception as e:
-            raise e
+            pass
 
     def __init__(self, component_manager):
         Plugin.__init__(self, component_manager)
