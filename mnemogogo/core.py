@@ -566,6 +566,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
     day_starts_at = mnemoconfig["day_starts_at"]
 
     config = {
+            'log_format' : '2',
             'day_starts_at' : day_starts_at,
             'grade_0_items_at_once' : grade_0_at_once,
             'logging' : "1",
@@ -648,8 +649,11 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
 
     thinking_time = round(float(blocks[4]))
 
-    if logtype == 'S': # 'S': updated 2.x style log entry, second accuracy
+    if logtype == 'S': # 'S': updated 2.x style log entry
         timestamp, last_rep, next_rep = blocks[5].split(" ")
+        timestamp = long(timestamp)
+        last_rep  = long(last_rep)
+        next_rep  = long(next_rep)
 
     else: # 'R': 1.x style log entry, daily accuracy
           # see also: cards_to_stats

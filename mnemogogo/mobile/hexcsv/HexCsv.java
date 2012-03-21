@@ -242,6 +242,7 @@ abstract class HexCsv
 
         cards = new Card[ncards];
         Card.cardlookup = this;
+        Card.log_format = config.logFormat();
 
         for (int i=0; i < ncards; ++i) {
             cards[i] = new Card(in, i);

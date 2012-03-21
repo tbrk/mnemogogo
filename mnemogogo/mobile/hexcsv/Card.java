@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Random;
 import java.util.Vector;
+import java.lang.System;
 
 public class Card
 {
@@ -50,6 +51,7 @@ public class Card
     private boolean skip = false;
 
     public static CardList cardlookup;
+    public static int log_format;
     private static Random rand = new Random();
 
     private static int statLineLength = 62;
@@ -598,7 +600,12 @@ public class Card
                 StringBuffer r = new StringBuffer(100);
 
                 // NOTE: the <%d> must be replaced with the id.
-                r.append("R <");
+                if (log_format == 1) {
+                    r.append("R");
+                } else if (log_format >= 2) {
+                    r.append("S");
+                }
+                r.append(" <");
                 r.append(Integer.toString(serial));
                 r.append("> ");
                 r.append(Integer.toString(grade));
@@ -624,6 +631,16 @@ public class Card
                 r.append(Integer.toString(noise));
                 r.append(" | ");
                 r.append(Float.toString(thinking_time_msecs / 1000.0f));
+
+                if (log_format >= 2) {
+                    r.append(" | ");
+                    r.append(Long.toString(System.currentTimeMillis() / 1000));
+                    r.append(" ");
+                    r.append(Long.toString(last_rep));
+                    r.append(" ");
+                    r.append(Long.toString(next_rep));
+                }
+
                 r.append("\n");
 
                 logfile.write(r.toString(), 0, r.length());

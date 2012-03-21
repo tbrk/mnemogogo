@@ -206,7 +206,7 @@ class Import(mnemogogo.Import):
                         + self.serial_to_id[r.group('id')], line)
                 postlog.write(line)
             except:
-                mnemogogo.log_warning("ignoring log line: " + line)
+                mnemogogo.logger().log_warning("ignoring log line: " + line)
 
             line = prelog.readline()
 

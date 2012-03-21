@@ -45,10 +45,18 @@ public class Config
 
     private void setDefaults()
     {
+        data.put("log_format", "2");
         data.put("grade_0_items_at_once", "10");
         data.put("sorting", "1");
         data.put("logging", "1");
         data.put("day_starts_at", "3");
+    }
+
+    public int logFormat()
+    {
+        String v = getString("log_format");
+        int i = Integer.parseInt(v);
+        return i;
     }
 
     public int grade0ItemsAtOnce()
