@@ -298,7 +298,8 @@ class Export(Job):
                 else:
                     name = src_root.encode('punycode').upper()\
                                 .replace(' ', '_')\
-                                .replace('?', '_qu-')
+                                .replace('?', '_qu-')\
+                                .replace('*', '_ast-')
                     name = name + self.directory_index(src_dir)
                 self.img_cnt += 1
 
