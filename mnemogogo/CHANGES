@@ -1,4 +1,8 @@
-2011____ mnemogogo-1.2.7
+2011____ mnemogogo-2.0.0
+* Support for Mnemosyne 2.x
+  - Upgrade GUI for Qt 4.x
+  - Upgrade for new Mnemosyne internals
+* Support for marking cards in clients (With the tag: "Gogotagged")
 * Changes in the HexCsv library:
   - Fix a bug in the logging of next_interval values: they should be printed
     as integers and not floats.
@@ -6,6 +10,8 @@
     Previously it has been sorted by (next_rep - last_rep), but it should be
     sorted by next_rep (thanks to Stephen Holly for noticing the strange
     behaviour of 'learn ahead').
+  - Support marking tags
+  - Support log_format = 2 with logging of timestamp, next_rep, and last_rep
 
 20110707 mnemogogo-1.2.6
 * Changes in the HexCsv library:

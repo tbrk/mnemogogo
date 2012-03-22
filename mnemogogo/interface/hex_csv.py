@@ -84,6 +84,8 @@ class BasicExport(mnemogogo.Export):
         self.statfile = open(join(self.sync_path, 'STATS.CSV'), 'wb')
         self.statfile.write(str(num_cards) + '\n')
 
+        self.markedfile = open(join(self.sync_path, 'MARKED'), 'w')
+
         self.idfile = open(join(self.sync_path, 'IDS'), 'wb')
         self.serial_num = 0
 
@@ -101,6 +103,7 @@ class BasicExport(mnemogogo.Export):
         catfile.close()
 
         self.statfile.close()
+        self.markedfile.close()
         self.idfile.close()
         self.cardfile.close()
 
@@ -151,6 +154,9 @@ class BasicExport(mnemogogo.Export):
         # Write card data
         self.write_data(self.cardfile, self.serial_num, q, a, cat, is_overlay)
 
+        if stats['marked']:
+            self.markedfile.write("%d\n" % self.serial_num);
+
         self.serial_num += 1
         self.percentage_complete = (self.serial_num * 80) / self.num_cards
             # cludge: leave 20% for images/sounds
@@ -168,8 +174,7 @@ class Import(mnemogogo.Import):
             try:
                 self.statfile = open(statpath, 'r')
             except IOError, e:
-                self.error("Cannot open '%s'!\n\n(%s)" %
-                           (self.statpath, str(e)))
+                self.error("Cannot open '%s'!\n\n(%s)" % (statpath, str(e)))
         except IOError:
             self.error('Could not find: ' + statpath)
 
@@ -183,6 +188,11 @@ class Import(mnemogogo.Import):
         self.line = 0
         self.serial_num = 0
         self.serial_to_id = {}
+
+        self.marked_cards = set()
+        try:
+            self.read_marked()
+        except IOError, e: pass
 
     def close(self):
         self.statfile.close()
@@ -222,6 +232,7 @@ class Import(mnemogogo.Import):
         id = self.idfile.readline()
         id = id.rstrip()
         self.serial_to_id[str(self.serial_num)] = id
+        marked = self.serial_num in self.marked_cards
         self.line += 1
         fields = line.rstrip().split(',')
 
@@ -232,7 +243,21 @@ class Import(mnemogogo.Import):
         self.serial_num += 1
         self.percentage_complete = (self.serial_num * 100) / self.num_cards
 
-        return (id, dict(zip(self.learning_data, stats)))
+        card_data = dict(zip(self.learning_data, stats))
+        card_data['marked'] = marked
+        return (id, card_data)
+
+    def read_marked(self):
+        mfile_path = join(self.sync_path, 'MARKED')
+        if not exists(mfile_path): return
+        mfile = open(mfile_path, 'r')
+
+        line = mfile.readline().rstrip()
+        while line != '':
+            self.marked_cards.add(int(line))
+            line = mfile.readline().rstrip()
+
+        mfile.close()
 
     def read_config(self):
         config = {}

@@ -42,6 +42,8 @@ max_config_size = 50
 HOUR = 60 * 60
 DAY = 24 * HOUR
 
+marked_tag = "Gogomarked"
+
 def set_logger(new_logger):
     global _logger
     _logger = new_logger
@@ -596,6 +598,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
         stats = card_to_stats(card, unseen_compat=True)
+        stats['marked'] = marked_tag in card.tags
 
         q = card.question(render_chain="mnemogogo")
         a = card.answer(render_chain="mnemogogo")
@@ -608,9 +611,9 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
         except IndexError: inverse_id = None
 
         try:
-            category = [t.name for t in card.tags][0]
-            if category == "__UNTAGGED__":
-                category = 'None'
+            category = [t.name for t in card.tags
+                               if t.name != marked_tag
+                                    and t.name != "__UNTAGGED__"][0]
         except IndexError:
             category = 'None'
 
@@ -743,13 +746,34 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
             progress_bar.setProperty("value", importer.percentage_complete)
 
     # Only update the database if the entire read is successful
+    marked_cards   = []
+    unmarked_cards = []
+
     for (card, stats) in new_stats:
         if stats['unseen']: continue
         stats_to_card(stats, card, day_starts_at)
+
+        if ('marked' in stats) and (stats['marked']):
+            marked_cards.append(card._id)
+        else:
+            unmarked_cards.append(card._id)
+
         mnemodb.update_card(card, repetition_only=True)
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),
                 os.path.join(sync_path, 'OLDSTATS.CSV'))
+
+    # Update cards tagged as 'marked'
+    if unmarked_cards:
+        tags = [ tag for tag in mnemodb.tags() if tag.name == marked_tag]
+        if tags:
+            mnemodb.remove_tag_from_cards_with_internal_ids(tags[0], unmarked_cards)
+
+    if marked_cards:
+        tag = mnemodb.get_or_create_tag_with_name(marked_tag)
+        mnemodb.add_tag_to_cards_with_internal_ids(tag, marked_cards)
+    elif tags:
+        mnemodb.delete_tag_if_unused(tags[0])
 
     # Import logging details
     logpath = os.path.join(sync_path, 'LOG')
