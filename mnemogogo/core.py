@@ -791,6 +791,9 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
         log.close()
         os.remove(logpath)
 
+    # Save the database
+    mnemodb.save()
+
 def get_database(config):
     try:
         mempath =  config["path"]
