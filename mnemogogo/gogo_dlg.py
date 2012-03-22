@@ -21,6 +21,7 @@ from PyQt4.QtGui import *
 
 from gogo_frm import *
 import traceback
+from os import mkdir
 from core import *
 
 def tr(text):
@@ -135,6 +136,11 @@ class GogoDlg(QDialog):
             if self.settings['sync_path'] == '':
                 self.showError(u"A synchronization path must be set first!")
                 return
+
+            if not os.path.exists(self.settings['sync_path']):
+                try:
+                    mkdir(self.settings['sync_path'])
+                except: pass
 
             if not os.path.exists(self.settings['sync_path']):
                 self.showError(u"The synchronization path ('%s') is not valid!"
