@@ -42,6 +42,7 @@ public class Card
     public long last_rep;
     public long next_rep;
     public boolean unseen;
+    public boolean marked = false;
     public int inverse;
     public int category;
 
@@ -454,6 +455,21 @@ public class Card
     public void setAnswer(String answer)
     {
         this.answer = answer;
+    }
+
+    public boolean isMarked()
+    {
+        return marked;
+    }
+
+    public void setMarked(boolean marked)
+    {
+        this.marked = marked;
+    }
+
+    public void toggleMarked()
+    {
+        marked = !marked;
     }
 
     public boolean getOverlay()

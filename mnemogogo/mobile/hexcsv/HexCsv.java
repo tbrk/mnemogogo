@@ -86,6 +86,11 @@ abstract class HexCsv
         truncatePathBuf();
         readCards(pathbuf);
 
+        truncatePathBuf();
+        try {
+            readMarked(pathbuf);
+        } catch (IOException e) { }
+
         if (config.logging()) {
             truncatePathBuf();
             pathbuf.append("PRELOG");
@@ -273,6 +278,41 @@ abstract class HexCsv
         return q.canLearnAhead(cards);
     }
 
+    private void readMarked(StringBuffer path)
+        throws IOException
+    {
+        InputStream is = openIn(path.append("MARKED").toString());
+        InputStreamReader in = new InputStreamReader(is);;
+
+        try {
+            while (true) {
+                int i = StatIO.readInt(in);
+                if (i >= 0 && i < cards.length) {
+                    cards[i].setMarked(true);
+                }
+            }
+        } catch (NumberFormatException e) {}
+
+        in.close();
+    }
+
+    private void writeMarked(StringBuffer path)
+        throws IOException
+    {
+        OutputStream os = openOut(path.append("MARKED").toString());
+        OutputStreamWriter out = new OutputStreamWriter(os);
+
+        for (int i=0; i < cards.length; ++i) {
+            if (cards[i].isMarked()) {
+                out.write(Integer.toString(i));
+                out.write('\n');
+            }
+        }
+
+        out.flush();
+        out.close();
+    }
+
     public void writeCards(StringBuffer path, String name, Progress progress)
         throws IOException
     {
@@ -312,7 +352,12 @@ abstract class HexCsv
     public void writeCards(StringBuffer path, Progress progress)
         throws IOException
     {
+        int path_len = path.length();
         writeCards(path, "STATS.CSV", progress);
+        path.setLength(path_len);
+        try {
+            writeMarked(path);
+        } catch (IOException e) {}
     }
 
     public void backupCards(StringBuffer path, Progress progress)

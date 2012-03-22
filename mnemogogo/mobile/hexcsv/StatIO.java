@@ -25,34 +25,36 @@ import java.io.EOFException;
 
 class StatIO
 {
+    static StringBuffer sbuf = new StringBuffer(20);
+
     static String readLine(InputStreamReader in)
         throws IOException
     {
-        StringBuffer s = new StringBuffer(20);
-        
+        sbuf.setLength(0);
+
         try {
             int b = in.read();
             while (b != -1 && b != '\n') {
-                s.append((char)b);
+                sbuf.append((char)b);
                 b = in.read();
             }
         } catch (EOFException e) { }
 
-        return s.toString();
+        return sbuf.toString();
     }
 
     static String read(InputStreamReader in)
         throws IOException
     {
-        StringBuffer s = new StringBuffer(20);
         int b = in.read();
+        sbuf.setLength(0);
         
         while (b != -1 && b != ',' && b != '\n') {
-            s.append((char)b);
+            sbuf.append((char)b);
             b = in.read();
         }
 
-        return s.toString();
+        return sbuf.toString();
     }
 
     static int readHexInt(InputStreamReader in)
