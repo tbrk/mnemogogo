@@ -598,7 +598,8 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
         stats = card_to_stats(card, unseen_compat=True)
-        stats['marked'] = marked_tag in card.tags
+        stats['marked'] = len([tag.name for tag in card.tags
+                                        if tag.name == marked_tag]) != 0
 
         q = card.question(render_chain="mnemogogo")
         a = card.answer(render_chain="mnemogogo")
