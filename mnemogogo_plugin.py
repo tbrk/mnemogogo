@@ -80,7 +80,6 @@ class MnemogogoRenderer(Renderer):
                 if add_br: text += "<br/>"
                 text += fact_data[fact_key]
                 add_br = True
-        print "text=%s" % text # XXX
         return text
 
 class MnemogogoRenderChain(RenderChain):
