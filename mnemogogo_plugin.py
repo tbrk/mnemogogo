@@ -38,6 +38,7 @@ from mnemosyne.libmnemosyne.ui_components.configuration_widget \
 
 # for MnemogogoRenderChain
 from mnemosyne.libmnemosyne.filters.latex import Latex
+from mnemosyne.libmnemosyne.renderer import Renderer
 from mnemosyne.libmnemosyne.render_chain import RenderChain
 from mnemosyne.libmnemosyne.renderers.plain_text import PlainText
 from mnemosyne.libmnemosyne.filters.expand_paths import ExpandPaths
@@ -68,11 +69,25 @@ class MnemogogoConfig(Hook):
     def run(self):
         pass
 
+class MnemogogoRenderer(Renderer):
+    used_for = None  # All card types.
+
+    def render(self, fact_data, fact_keys, card_type, **render_args):
+        text = ""
+        add_br = False
+        for fact_key in fact_keys:
+            if fact_key in fact_data and fact_data[fact_key]:
+                if add_br: text += "<br/>"
+                text += fact_data[fact_key]
+                add_br = True
+        print "text=%s" % text # XXX
+        return text
+
 class MnemogogoRenderChain(RenderChain):
     id = "mnemogogo"
     filters = [EscapeToHtml, Latex, ExpandPaths,
                NonLatinFontSizeIncrease]
-    renderers = [PlainText]
+    renderers = [MnemogogoRenderer]
 
     def __init__(self, component_manager):
         RenderChain.__init__(self, component_manager)
