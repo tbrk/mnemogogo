@@ -31,6 +31,11 @@ import re
 from copy import copy
 import os, os.path
 
+try:
+    from hashlib import md5
+except ImportError:
+    from md5 import md5
+
 name = "Gogorender"
 version = "2.0"
 description = "Render words as image files on Mnemogogo export. (v" + version + ")"
@@ -46,6 +51,8 @@ default_config = {
     # \x2028 is the "Line Separator"
     # \x2029 is the "Paragraph Separator"
     'not_word'        : u'[\s\u2028\u2029\ufffc]',
+
+    'default_render'  : False,
 }
 
 def translate(text):
@@ -66,6 +73,8 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         vlayout = QtGui.QVBoxLayout(self)
 
         config = self.config()['gogorender']
+        if 'default_render' not in config:
+            config['default_render'] = False
 
         # add basic settings
         toplayout = QtGui.QFormLayout()
@@ -80,13 +89,21 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         self.transparent.setChecked(config["transparent"])
         toplayout.addRow(translate("Render with transparency:"), self.transparent)
 
+        self.default_render = QtGui.QCheckBox(self)
+        self.default_render.setChecked(config["default_render"])
+        toplayout.addRow(translate("Render in Mnemosyne (for testing):"),
+                         self.default_render)
+
         vlayout.addLayout(toplayout)
 
     def apply(self):
-        self.config()["gogorender"]["not_render_char"] = \
-            u"[%s]" % unicode(self.not_render_char.text())
-        self.config()["gogorender"]["transparent"] = \
-            self.transparent.isChecked()
+        was_default_render = self.config()["gogorender"]["default_render"]
+
+        config = self.config()['gogorender']
+
+        config["not_render_char"] = u"[%s]" % unicode(self.not_render_char.text())
+        config["transparent"]     = self.transparent.isChecked()
+        config["default_render"]  = self.default_render.isChecked()
 
         for chain in render_chains:
             try:
@@ -94,6 +111,13 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
                 if filter:
                     filter.reconfigure()
             except KeyError: pass
+
+        if was_default_render != config['default_render']:
+            if was_default_render:
+                self.render_chain('default').unregister_filter(Gogorender)
+            else:
+                self.render_chain('default').register_at_back(Gogorender,
+                                                      before=["ExpandPaths"])
 
 def moveprev(pos):
     pos.movePosition(QTextCursor.PreviousCharacter, QTextCursor.KeepAnchor)
@@ -117,8 +141,7 @@ class Gogorender(Filter):
         except KeyError: config = {}
 
         if key == 'imgpath':
-            return config.get('imgpath',
-                os.path.join(self.config().data_dir, 'gogorender'))
+            return os.path.join(self.database().media_dir(), "_gogorender")
         else:
             return config.get(key, default_config[key])
 
@@ -165,12 +188,14 @@ class Gogorender(Filter):
         if fword[0] == '.': fword = '_' + fword
         if fword[0] == '-': fword = '_' + fword
 
-        filename = "%s-%s-%s-%s-%s.png" % (
+        filename = "%s-%s-%s-%s-%s" % (
             fword, fontname, str(fontsize), style, colorname)
+        filename = md5(filename.encode("utf-8")).hexdigest() + ".png"
         path = os.path.join(self.imgpath, filename)
+        relpath = "_gogorender" + "/" + filename
 
         if (os.path.exists(path)):
-            return path
+            return relpath
 
         # Render with Qt
         text = QtCore.QString(word)
@@ -200,7 +225,7 @@ class Gogorender(Filter):
         p.end()
 
         if img.save(path, "PNG"):
-            return path
+            return relpath
         else:
             return None
 
@@ -306,9 +331,8 @@ class Gogorender(Filter):
             pos = doc.find(self.render_char_re, pos)
 
         if render:
-            return self.substitute(unicode(text), render)
-        else:
-            return text
+            text = self.substitute(unicode(text), render)
+        return text
 
 class GogorenderPlugin(Plugin):
     name = name
@@ -320,6 +344,12 @@ class GogorenderPlugin(Plugin):
 
     def activate(self):
         Plugin.activate(self)
+
+        try:
+            if  self.config()['gogorender']['default_render']:
+                render_chains.append('default')
+        except KeyError: pass
+
         for chain in render_chains:
             try:
                 self.new_render_chain(chain)
@@ -334,7 +364,8 @@ class GogorenderPlugin(Plugin):
 
     def new_render_chain(self, name):
         if name in render_chains:
-            self.render_chain(name).register_at_back(Gogorender)
+            self.render_chain(name).register_at_back(Gogorender,
+                                                     before=["ExpandPaths"])
 
 # Register plugin.
 
