@@ -37,20 +37,22 @@ except ImportError:
     from md5 import md5
 
 name = "Gogorender"
-version = "2.0"
+version = "2.0.1"
 description = "Render words as image files on Mnemogogo export. (v" + version + ")"
 
 render_chains = ["mnemogogo"]
 
-default_config = {
-    'transparent'     : True,
-    'render_char'     : u'[\u0100-\uff00]',
-    'not_render_char' : u'[—≠–œ‘’“”…€]',
+# \xfffc is the "Object Replacement Character" (used for images)
+# \x2028 is the "Line Separator"
+# \x2029 is the "Paragraph Separator"
+not_word = u'[\s\u2028\u2029\ufffc]'
+not_line = u'[\r\n\u2028\u2029\ufffc]'
 
-    # \xfffc is the "Object Replacement Character" (used for images)
-    # \x2028 is the "Line Separator"
-    # \x2029 is the "Paragraph Separator"
-    'not_word'        : u'[\s\u2028\u2029\ufffc]',
+default_config = {
+    'transparent'      : True,
+    'render_char'      : u'[\u0100-\uff00]',
+    'not_render_char'  : u'[—≠–œ‘’“”…€]',
+    'render_line_tags' : u'',
 
     'default_render'  : False,
 }
@@ -75,6 +77,8 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         config = self.config()['gogorender']
         if 'default_render' not in config:
             config['default_render'] = False
+        if 'render_line_tags' not in config:
+            config['render_line_tags'] = u""
 
         # add basic settings
         toplayout = QtGui.QFormLayout()
@@ -84,6 +88,12 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         toplayout.addRow(
             translate("Treat these characters normally:"),
             self.not_render_char)
+
+        self.render_line_tags = QtGui.QLineEdit(self)
+        self.render_line_tags.setText(config["render_line_tags"])
+        toplayout.addRow(
+            translate("Render entire lines for these tags:"),
+            self.render_line_tags)
 
         self.transparent = QtGui.QCheckBox(self)
         self.transparent.setChecked(config["transparent"])
@@ -101,7 +111,8 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
 
         config = self.config()['gogorender']
 
-        config["not_render_char"] = u"[%s]" % unicode(self.not_render_char.text())
+        config["not_render_char"]  = u"[%s]" % unicode(self.not_render_char.text())
+        config["render_line_tags"] = u"%s" % unicode(self.render_line_tags.text())
         config["transparent"]     = self.transparent.isChecked()
         config["default_render"]  = self.default_render.isChecked()
 
@@ -151,14 +162,17 @@ class Gogorender(Filter):
 
         self.transparent        = self.setting('transparent')
         self.render_char_re     = QRegExp(self.setting('render_char'))
+        self.render_line_tags   = {t.strip()
+                for t in self.setting('render_line_tags').split(',')}
         self.not_render_char_re = QRegExp(self.setting('not_render_char'))
-        self.not_word_re        = QRegExp(self.setting('not_word'))
+        self.not_word_re        = QRegExp(not_word)
+        self.not_line_re        = QRegExp(not_line)
 
     def debugline(self, msg, pos):
         if self.debug:
             s = pos.selectedText()
             try:
-                c = ord(unicode(s[0]))
+                c = ord(unicode(s[-1]))
             except IndexError: c = 0
             self.component_manager.debug(
                 u'gogorender: %s pos=%d char="%s" (0x%04x)'
@@ -265,6 +279,11 @@ class Gogorender(Filter):
             font = QtGui.QFont(family, int(size), int(weight), bool(int(italic)))
             doc.setDefaultFont(font)
 
+        if {True for t in card.tags if t.name in self.render_line_tags}:
+            not_word_re = self.not_line_re
+        else:
+            not_word_re = self.not_word_re
+
         doc.setHtml(text)
         if self.debug:
             self.component_manager.debug(
@@ -276,12 +295,12 @@ class Gogorender(Filter):
         while not pos.isNull():
             s = pos.selectedText()
             if (self.not_render_char_re.exactMatch(s)
-                    or self.not_word_re.exactMatch(s)):
+                    or not_word_re.exactMatch(s)):
                 self.debugline("skip", pos)
                 movenext(pos)
                 pos = doc.find(self.render_char_re, pos)
                 continue;
-            self.debugline("==", pos)
+            self.debugline("===", pos)
 
             fmt = pos.charFormat()
             font = fmt.font()
@@ -295,7 +314,7 @@ class Gogorender(Filter):
                 ccolor = pos.charFormat().foreground().color()
                 self.debugline("<--", pos)
 
-                if len(s) > 0 and self.not_word_re.exactMatch(s[0]):
+                if len(s) > 0 and not_word_re.exactMatch(s[0]):
                     movenext(pos)
                     self.debugline("-->", pos)
                     break;
@@ -313,9 +332,9 @@ class Gogorender(Filter):
                 self.debugline("-->", pos)
 
                 if (pos.charFormat().font() != font or ccolor != color
-                        or self.not_word_re.exactMatch(s[-1])):
+                        or not_word_re.exactMatch(s[-1])):
                     moveprev(pos)
-                    self.debugline("<--)", pos)
+                    self.debugline("<-)", pos)
                     break;
 
             if pos.hasSelection():
