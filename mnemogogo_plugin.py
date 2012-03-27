@@ -171,6 +171,7 @@ class MnemogogoPlugin(Plugin):
         'max_width'     : 240,
         'max_height'    : 300,
         'max_size'      : 64,
+        'first_run'     : True,
     }
 
     def load_config(self):
@@ -190,6 +191,16 @@ class MnemogogoPlugin(Plugin):
         self.config()[self.config_key] = copy.copy(self.settings)
 
     def open_dialog(self):
+
+        # Show a warning on first run
+        first_run = self.settings['first_run']
+        if first_run:
+            msg = ("Please use the 2.x versions of Mnemododo/jojo for "
+                +  "full compatibility with Mnemosyne's new synchronisation "
+                +  "protocol.")
+            QMessageBox.warning(None, tr("Mnemogogo"), tr(msg),
+                                 tr("&OK"), "", "", 0, -1)
+
         mobile_before = self.settings['mode'] == 'mobile'
 
         self.gogo_dlg.configure(self.settings, self.config(), self.database(),
@@ -197,6 +208,7 @@ class MnemogogoPlugin(Plugin):
                                 self.component_manager.debug)
         self.gogo_dlg.exec_()
         self.settings = self.gogo_dlg.settings
+        self.settings['first_run'] = False
 
         mobile_after = self.settings['mode'] == 'mobile'
 

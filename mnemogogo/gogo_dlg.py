@@ -228,6 +228,9 @@ class GogoDlg(QDialog):
 
         if settings.has_key('mode'):
             self.mode = settings['mode']
+        else:
+            self.mode = 'local'
+        self.settings['mode'] = self.mode
         
         if self.mode == 'mobile':
             self.setMobile()
