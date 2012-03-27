@@ -656,8 +656,11 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
     if logtype == 'S': # 'S': updated 2.x style log entry
         timestamp, last_rep, next_rep = blocks[5].split(" ")
         timestamp = long(timestamp)
-        last_rep  = long(last_rep)
-        next_rep  = long(next_rep)
+
+        # long(last_rep) is the number of days since the epoch, but the number
+        # of seconds is needed, so just use the timestamp.
+        last_rep = timestamp # long(last_rep)
+        next_rep = long(next_rep) * DAY
 
     else: # 'R': 1.x style log entry, daily accuracy
           # see also: cards_to_stats
