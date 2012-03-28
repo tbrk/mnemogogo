@@ -30,6 +30,7 @@ import sys
 import re
 from copy import copy
 import os, os.path
+import shutil
 
 try:
     from hashlib import md5
@@ -53,6 +54,7 @@ default_config = {
     'render_char'      : u'[\u0100-\uff00]',
     'not_render_char'  : u'[—≠–œ‘’“”…€]',
     'render_line_tags' : u'',
+    'max_line_width'   : 240,
 
     'default_render'  : False,
 }
@@ -69,38 +71,48 @@ class GogorenderConfig(Hook):
 class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
     name = name
 
+    def setting(self, key):
+        try:
+            config = self.config()["gogorender"]
+        except KeyError: config = {}
+
+        if key == 'imgpath':
+            return os.path.join(self.database().media_dir(), "_gogorender")
+        else:
+            return config.get(key, default_config[key])
+
     def __init__(self, component_manager, parent):
         ConfigurationWidget.__init__(self, component_manager)
         QtGui.QDialog.__init__(self, self.main_widget())
         vlayout = QtGui.QVBoxLayout(self)
 
-        config = self.config()['gogorender']
-        if 'default_render' not in config:
-            config['default_render'] = False
-        if 'render_line_tags' not in config:
-            config['render_line_tags'] = u""
-
         # add basic settings
         toplayout = QtGui.QFormLayout()
 
         self.not_render_char = QtGui.QLineEdit(self)
-        self.not_render_char.setText(config["not_render_char"][1:-1])
+        self.not_render_char.setText(self.setting("not_render_char")[1:-1])
         toplayout.addRow(
             translate("Treat these characters normally:"),
             self.not_render_char)
 
         self.render_line_tags = QtGui.QLineEdit(self)
-        self.render_line_tags.setText(config["render_line_tags"])
+        self.render_line_tags.setText(self.setting("render_line_tags"))
         toplayout.addRow(
-            translate("Render entire lines for these tags:"),
+            translate("Render entire lines right-to-left for these tags:"),
             self.render_line_tags)
 
+        self.max_line_width = QtGui.QSpinBox(self)
+        self.max_line_width.setRange(50, 5000)
+        self.max_line_width.setValue(int(self.setting('max_line_width')))
+        toplayout.addRow(translate("Maximum line width (pixels):"),
+                self.max_line_width)
+
         self.transparent = QtGui.QCheckBox(self)
-        self.transparent.setChecked(config["transparent"])
+        self.transparent.setChecked(self.setting("transparent"))
         toplayout.addRow(translate("Render with transparency:"), self.transparent)
 
         self.default_render = QtGui.QCheckBox(self)
-        self.default_render.setChecked(config["default_render"])
+        self.default_render.setChecked(self.setting("default_render"))
         toplayout.addRow(translate("Render in Mnemosyne (for testing):"),
                          self.default_render)
 
@@ -115,6 +127,11 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         config["render_line_tags"] = u"%s" % unicode(self.render_line_tags.text())
         config["transparent"]     = self.transparent.isChecked()
         config["default_render"]  = self.default_render.isChecked()
+        config["max_line_width"]  = self.max_line_width.value()
+
+        imgpath = self.setting("imgpath")
+        if os.path.exists(imgpath): shutil.rmtree(imgpath)
+        if not os.path.exists(imgpath): os.mkdir(imgpath)
 
         for chain in render_chains:
             try:
@@ -167,6 +184,7 @@ class Gogorender(Filter):
         self.not_render_char_re = QRegExp(self.setting('not_render_char'))
         self.not_word_re        = QRegExp(not_word)
         self.not_line_re        = QRegExp(not_line)
+        self.max_line_width     = int(self.setting('max_line_width'))
 
     def debugline(self, msg, pos):
         if self.debug:
@@ -181,7 +199,7 @@ class Gogorender(Filter):
     # Must return one of:
     #   None            not rendered after all
     #   path            a path to the rendered image
-    def render_word(self, word, font, color):
+    def render_word(self, word, font, color, render_rtol):
         fontname = font.family()
         fontsize = font.pointSize()
 
@@ -218,6 +236,15 @@ class Gogorender(Filter):
         width = fm.width(text) + (fm.charWidth('M', 0) / 2)
         height = fm.height()
 
+        option = QtGui.QTextOption()
+        if render_rtol:
+            lines = int(round(float(width) / float(self.max_line_width)))
+            width = self.max_line_width
+            height = (height + fm.leading()) * lines
+            option.setTextDirection(QtCore.Qt.RightToLeft)
+
+        tbox = QtCore.QRectF(0, 0, width, height)
+
         # Alternative: calculate the bounding box from the text being rendered;
         #              disadvantage = bad alignment of adjacent images.
         #bbox = fm.boundingRect(text)
@@ -235,7 +262,7 @@ class Gogorender(Filter):
         p.begin(img)
         p.setFont(font)
         p.setPen(QtGui.QColor(color))
-        p.drawText(0, 0, width, height, 0, text)
+        p.drawText(tbox, text, option)
         p.end()
 
         if img.save(path, "PNG"):
@@ -280,8 +307,10 @@ class Gogorender(Filter):
             doc.setDefaultFont(font)
 
         if {True for t in card.tags if t.name in self.render_line_tags}:
+            render_line = True
             not_word_re = self.not_line_re
         else:
+            render_line = False
             not_word_re = self.not_word_re
 
         doc.setHtml(text)
@@ -342,7 +371,7 @@ class Gogorender(Filter):
                 if self.debug:
                     self.component_manager.debug(
                         u'gogorender: word="%s"' % word)
-                path = self.render_word(unicode(word), font, color)
+                path = self.render_word(unicode(word), font, color, render_line)
 
                 if path is not None:
                     render.append((unicode(word), unicode(path)))
