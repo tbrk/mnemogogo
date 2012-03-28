@@ -31,6 +31,7 @@ import re
 from copy import copy
 import os, os.path
 import shutil
+import math
 
 try:
     from hashlib import md5
@@ -58,6 +59,9 @@ default_config = {
 
     'default_render'  : False,
 }
+
+body_match_re = re.compile(r'^.*<body[^>]*>\n*(?P<body>.*)\n*</body>.*$',
+                           re.DOTALL)
 
 def translate(text):
     return text
@@ -234,13 +238,12 @@ class Gogorender(Filter):
 
         fm = QtGui.QFontMetrics(font)
         width = fm.width(text) + (fm.charWidth('M', 0) / 2)
-        height = fm.height()
 
         option = QtGui.QTextOption()
         if render_rtol:
-            lines = int(round(float(width) / float(self.max_line_width)))
-            width = self.max_line_width
-            height = (height + fm.leading()) * lines
+            lines = int(math.ceil(float(width) / float(self.max_line_width)))
+            width = min(width, self.max_line_width)
+            height = (fm.height() + fm.leading()) * lines
             option.setTextDirection(QtCore.Qt.RightToLeft)
 
         tbox = QtCore.QRectF(0, 0, width, height)
@@ -251,6 +254,11 @@ class Gogorender(Filter):
         #width = bbox.width()
         #height = bbox.height()
 
+        if self.debug:
+            self.component_manager.debug(
+                "gogorender: rendering '%s' as a %dx%d image at %s"
+                % (text, width, height, path))
+
         img = QtGui.QImage(width, height, QtGui.QImage.Format_ARGB32)
 
         if self.transparent:
@@ -260,9 +268,67 @@ class Gogorender(Filter):
 
         p = QtGui.QPainter()
         p.begin(img)
+        p.setRenderHint(QtGui.QPainter.Antialiasing)
         p.setFont(font)
         p.setPen(QtGui.QColor(color))
         p.drawText(tbox, text, option)
+        p.end()
+
+        if img.save(path, "PNG"):
+            return relpath
+        else:
+            return None
+
+    # Must return one of:
+    #   None            not rendered after all
+    #   path            a path to the rendered image
+    def render_html(self, word, html, font):
+        filename = md5(word.encode("utf-8")).hexdigest() + "-html.png"
+        path = os.path.join(self.imgpath, filename)
+        relpath = "_gogorender" + "/" + filename
+
+        if (os.path.exists(path)):
+            return relpath
+
+        text = QtCore.QString(word)
+        fm = QtGui.QFontMetrics(font)
+        width = fm.width(text) + (fm.charWidth('M', 0) / 2)
+
+        # add 25% to the width
+        lines = int(math.ceil((float(width) * 1.25) / float(self.max_line_width)))
+        width = min(width, self.max_line_width)
+        height = (fm.height() + fm.leading()) * lines
+
+        # Render with Qt, adapted from:
+        # http://www.qtcentre.org/threads/11357-HTML-text-drawn-with-QPainter-drawText()
+        doc = QTextDocument()
+        doc.setUndoRedoEnabled(False)
+        doc.setHtml(html)
+        doc.setTextWidth(width)
+        doc.setDocumentMargin(0.0)
+        doc.setIndentWidth(0.0)
+        doc.setUseDesignMetrics(True)
+
+        option = QtGui.QTextOption()
+        option.setTextDirection(QtCore.Qt.RightToLeft)
+
+        tbox = QtCore.QRectF(0, 0, width, height)
+
+        if self.debug:
+            self.component_manager.debug(
+                "gogorender: rendering '%s' as a %dx%d image at %s"
+                % (word, width, height, path))
+
+        img = QtGui.QImage(width, height, QtGui.QImage.Format_ARGB32)
+        if self.transparent:
+            img.fill(QtGui.qRgba(0,0,0,0))
+        else:
+            img.fill(QtGui.qRgba(255,255,255,255))
+
+        p = QtGui.QPainter()
+        p.begin(img)
+        p.setRenderHint(QtGui.QPainter.Antialiasing)
+        doc.drawContents(p, tbox)
         p.end()
 
         if img.save(path, "PNG"):
@@ -296,6 +362,11 @@ class Gogorender(Filter):
 
     def run(self, text, card, fact_key, **render_args):
         doc = QTextDocument()
+        doc.setUndoRedoEnabled(False)
+        doc.setDocumentMargin(0.0)
+        doc.setIndentWidth(0.0)
+        doc.setUseDesignMetrics(True)
+        doc_modified = False
 
         proxy_key = card.card_type.fact_key_format_proxies()[fact_key]
         font_string = self.config().card_type_property(
@@ -348,7 +419,8 @@ class Gogorender(Filter):
                     self.debugline("-->", pos)
                     break;
 
-                if pos.charFormat().font() != font or ccolor != color:
+                if (not render_line and
+                        (pos.charFormat().font() != font or ccolor != color)):
                     break;
 
             pos.setPosition(pos.position(), QTextCursor.MoveAnchor)
@@ -360,26 +432,41 @@ class Gogorender(Filter):
                 ccolor = pos.charFormat().foreground().color()
                 self.debugline("-->", pos)
 
-                if (pos.charFormat().font() != font or ccolor != color
+                if ((not render_line and
+                           (pos.charFormat().font() != font or ccolor != color))
                         or not_word_re.exactMatch(s[-1])):
                     moveprev(pos)
                     self.debugline("<-)", pos)
                     break;
 
             if pos.hasSelection():
-                word = pos.selectedText()
+                word = unicode(pos.selectedText())
+
                 if self.debug:
                     self.component_manager.debug(
                         u'gogorender: word="%s"' % word)
-                path = self.render_word(unicode(word), font, color, render_line)
+
+                if render_line:
+                    html = unicode(pos.selection().toHtml())
+                    path = self.render_html(word, html, font)
+                else:
+                    path = self.render_word(word, font, color, render_line)
 
                 if path is not None:
-                    render.append((unicode(word), unicode(path)))
+                    if render_line:
+                        pos.removeSelectedText()
+                        pos.insertImage(path)
+                        doc_modified = True
+                    else:
+                        render.append((word, unicode(path)))
 
             pos = doc.find(self.render_char_re, pos)
 
-        if render:
+        if doc_modified:
+            text = body_match_re.sub(r'\g<body>', unicode(doc.toHtml()))
+        elif render:
             text = self.substitute(unicode(text), render)
+
         return text
 
 class GogorenderPlugin(Plugin):
