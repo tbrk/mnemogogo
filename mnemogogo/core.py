@@ -538,10 +538,14 @@ def stats_to_card(stats, card, day_starts_at=3):
             setattr(card, f, timestamp)
 
         elif f == 'next_rep':
-            # Compatibility with Mnemosyne 1.x: next_rep in days, not seconds.
-            # Multiplying by DAY gives midnight UTC on the scheduled day as
-            # required.
-            setattr(card, f, stats[f] * DAY)
+            if card.grade < 2:
+                # Satisfy an assert in schedulers/SM2_mnemosyne
+                setattr(card, f, card.last_rep)
+            else:
+                # Compatibility with Mnemosyne 1.x: next_rep in days, not seconds.
+                # Multiplying by DAY gives midnight UTC on the scheduled day as
+                # required.
+                setattr(card, f, stats[f] * DAY)
         else:
             setattr(card, f, int(stats[f]))
 
