@@ -238,12 +238,13 @@ class Gogorender(Filter):
 
         fm = QtGui.QFontMetrics(font)
         width = fm.width(text) + (fm.charWidth('M', 0) / 2)
+        height = fm.height()
 
         option = QtGui.QTextOption()
         if render_rtol:
             lines = int(math.ceil(float(width) / float(self.max_line_width)))
             width = min(width, self.max_line_width)
-            height = (fm.height() + fm.leading()) * lines
+            height = (height + fm.leading()) * lines
             option.setTextDirection(QtCore.Qt.RightToLeft)
 
         tbox = QtCore.QRectF(0, 0, width, height)
