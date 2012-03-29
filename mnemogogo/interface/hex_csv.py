@@ -341,6 +341,9 @@ class JojoExport(BasicExport):
             self.raw_conversions.append(
                 (r'<font\s+color\s*=\s*"([^"]*)"\s*/?>',
                  r'<span style="color: \1;">'))
+            self.raw_conversions.append(
+                (r'<font\s+style\s*=\s*"([^"]*)"\s*>',
+                 r'<span style="\1">'))
 
             for (mat, rep) in self.raw_conversions:
                 self.conversions.append(
