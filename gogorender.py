@@ -270,7 +270,9 @@ class Gogorender(Filter):
         p = QtGui.QPainter()
         p.begin(img)
         p.setBackgroundMode(QtCore.Qt.TransparentMode)
-        p.setRenderHint(QtGui.QPainter.Antialiasing)
+        p.setRenderHint(QtGui.QPainter.Antialiasing +
+                        QtGui.QPainter.HighQualityAntialiasing +
+                        QtGui.QPainter.SmoothPixmapTransform)
         p.setFont(font)
         p.setPen(QtGui.QColor(color))
         p.drawText(tbox, text, option)
