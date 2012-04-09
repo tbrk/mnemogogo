@@ -386,15 +386,18 @@ class RevQueue {
         ++curr;
 
         if (num_scheduled > 0) {
-            if (curr < num_scheduled) {
-                return q[curr];
 
-            } else {
-                // scheduled cards done
-                shiftForgottenToNew();
-                num_scheduled = 0;
-                rebuildNewQueue();
+            while (curr < num_scheduled) {
+                if (!q[curr].isSkip()) {
+                    return q[curr];
+                }
+                ++curr;
             }
+
+            // scheduled cards done
+            shiftForgottenToNew();
+            num_scheduled = 0;
+            rebuildNewQueue();
         }
 
         while (limit_new > 0) {
