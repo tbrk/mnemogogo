@@ -104,7 +104,7 @@ class MnemogogoReviewWdgt(ReviewWdgt):
 
         mnemogogo.lock_enabling.add(self.show_button)
         mnemogogo.lock_enabling.add(self.grades)
-        mnemogogo.lock_enabling.add(self.main_widget().actionActivatePlugins)
+        mnemogogo.lock_enabling.add(self.main_widget().actionManagePlugins)
 
         mnemogogo.lock_visible.add(self.question)
         mnemogogo.lock_visible.add(self.question_label)
@@ -146,7 +146,7 @@ class MnemogogoReviewWdgt(ReviewWdgt):
     def remove_locking(self):
         self.show_button.removeLocking()
         self.grades.removeLocking()
-        self.main_widget().actionActivatePlugins.removeLocking()
+        self.main_widget().actionManagePlugins.removeLocking()
 
         self.question.removeLocking()
         self.question_label.removeLocking()
@@ -261,7 +261,7 @@ class MnemogogoPlugin(Plugin):
                 widget.answer.hideAndLock()
                 widget.answer_label.hideAndLock()
                 widget.gogoinfo.show()
-                main_widget.actionActivatePlugins.disableAndLock()
+                main_widget.actionManagePlugins.disableAndLock()
             else:
                 widget.show_button.unlockAndRestore()
                 widget.grades.unlockAndRestore()
@@ -270,7 +270,7 @@ class MnemogogoPlugin(Plugin):
                 widget.answer.unlockAndRestore()
                 widget.answer_label.unlockAndRestore()
                 widget.gogoinfo.hide()
-                main_widget.actionActivatePlugins.unlockAndRestore()
+                main_widget.actionManagePlugins.unlockAndRestore()
 
         except Exception as e:
             pass
