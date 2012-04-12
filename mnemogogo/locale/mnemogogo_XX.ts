@@ -3,7 +3,7 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="234"/>
+        <location filename="../mnemogogo_plugin.py" line="238"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -35,6 +35,86 @@
     <message>
         <location filename="gogo_dlg.py" line="257"/>
         <source>The interface &apos;%s&apos; is not currently available. Please select another.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="65"/>
+        <source>Making mnemosyne mobile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="116"/>
+        <source>Mobile reviewing is enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="117"/>
+        <source>Choose Mnemogogo from the Cards menu for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="138"/>
+        <source>Mnemogogo message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="200"/>
+        <source>Please use the 2.x versions of Mnemododo/jojo 
+for full compatibility with Mnemosyne&apos;s new synchronisation protocol.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="222"/>
+        <source>Missing state. Mnemogogo could not 
+determine whether it should be in local or mobile mode. Please use the 
+&apos;Force to Mobile&apos; and &apos;Force to Local&apos; buttons to establish the correct 
+state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="288"/>
+        <source>Incorrect installation. Missing %s directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="294"/>
+        <source>Incorrect installation. The mnemogogo 
+module could not be imported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mnemogogo_plugin.py" line="311"/>
+        <source>Transfer cards to and from your mobile device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="100"/>
+        <source>Treat these characters normally:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="105"/>
+        <source>Render entire lines right-to-left for these tags:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="112"/>
+        <source>Maximum line width (pixels):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="117"/>
+        <source>Render with transparency:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="121"/>
+        <source>Render in Mnemosyne (for testing):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gogorender.py" line="480"/>
+        <source>Render words as image files on Mnemogogo export.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -189,99 +269,14 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>GogorenderConfigWdgt</name>
-    <message>
-        <location filename="../gogorender.py" line="97"/>
-        <source>Treat these characters normally:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="102"/>
-        <source>Render entire lines right-to-left for these tags:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="109"/>
-        <source>Maximum line width (pixels):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="114"/>
-        <source>Render with transparency:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="118"/>
-        <source>Render in Mnemosyne (for testing):</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>GogorenderPlugin</name>
-    <message>
-        <location filename="../gogorender.py" line="477"/>
-        <source>Render words as image files on Mnemogogo export.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>MnemogogoPlugin</name>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="156"/>
-        <source>Making mnemosyne mobile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="196"/>
-        <source>Please use the 2.x versions of Mnemododo/jojo 
-for full compatibility with Mnemosyne&apos;s new synchronisation protocol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="198"/>
-        <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="218"/>
-        <source>Missing state. Mnemogogo could not 
-determine whether it should be in local or mobile mode. Please use the 
-&apos;Force to Mobile&apos; and &apos;Force to Local&apos; buttons to establish the correct 
-state.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="284"/>
-        <source>Incorrect installation. Missing %s directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="290"/>
-        <source>Incorrect installation. The mnemogogo 
-module could not be imported.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="307"/>
-        <source>Transfer cards to and from your mobile device.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>MnemogogoReviewWdgt</name>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="112"/>
-        <source>Mobile reviewing is enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="113"/>
-        <source>Choose Mnemogogo from the Cards menu for options.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mnemogogo_plugin.py" line="134"/>
-        <source>Mnemogogo message</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>
