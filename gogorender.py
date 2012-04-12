@@ -38,9 +38,11 @@ try:
 except ImportError:
     from md5 import md5
 
+def tr(msg):
+    return QtCore.QCoreApplication.translate(msg, "Mnemogogo")
+
 name = "Gogorender"
 version = "2.0.1"
-description = "Render words as image files on Mnemogogo export. (v" + version + ")"
 
 render_chains = ["mnemogogo"]
 
@@ -96,28 +98,27 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         self.not_render_char = QtGui.QLineEdit(self)
         self.not_render_char.setText(self.setting("not_render_char")[1:-1])
         toplayout.addRow(
-            translate("Treat these characters normally:"),
-            self.not_render_char)
+            tr("Treat these characters normally:"), self.not_render_char)
 
         self.render_line_tags = QtGui.QLineEdit(self)
         self.render_line_tags.setText(self.setting("render_line_tags"))
         toplayout.addRow(
-            translate("Render entire lines right-to-left for these tags:"),
+            tr("Render entire lines right-to-left for these tags:"),
             self.render_line_tags)
 
         self.max_line_width = QtGui.QSpinBox(self)
         self.max_line_width.setRange(50, 5000)
         self.max_line_width.setValue(int(self.setting('max_line_width')))
-        toplayout.addRow(translate("Maximum line width (pixels):"),
+        toplayout.addRow(tr("Maximum line width (pixels):"),
                 self.max_line_width)
 
         self.transparent = QtGui.QCheckBox(self)
         self.transparent.setChecked(self.setting("transparent"))
-        toplayout.addRow(translate("Render with transparency:"), self.transparent)
+        toplayout.addRow(tr("Render with transparency:"), self.transparent)
 
         self.default_render = QtGui.QCheckBox(self)
         self.default_render.setChecked(self.setting("default_render"))
-        toplayout.addRow(translate("Render in Mnemosyne (for testing):"),
+        toplayout.addRow(tr("Render in Mnemosyne (for testing):"),
                          self.default_render)
 
         vlayout.addLayout(toplayout)
@@ -476,7 +477,8 @@ class Gogorender(Filter):
 
 class GogorenderPlugin(Plugin):
     name = name
-    description = description
+    description = (tr("Render words as image files on Mnemogogo export.") +
+                   " (v" + version + ")")
     components = [GogorenderConfig, GogorenderConfigWdgt, Gogorender]
 
     def __init__(self, component_manager):

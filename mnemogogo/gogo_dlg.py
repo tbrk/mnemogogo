@@ -33,11 +33,28 @@ class GogoDlg(QDialog):
         }
 
     def showWarning(self, msg):
-        status = QMessageBox.warning(None, tr("Mnemogogo"), msg, tr("&OK"))
+        status = QMessageBox.warning(None, "Mnemogogo", msg, self.tr("&OK"))
 
     def showError(self, msg):
-        status = QMessageBox.critical(None, self.tr("Mnemogogo"), msg,
-                                      self.tr("&OK"))
+        status = QMessageBox.critical(None, "Mnemogogo", msg, self.tr("&OK"))
+
+    def showMnemogogoError(self, exc):
+        if exc.err == exc.ErrInitInterface:
+            msg = self.tr("Error initialising interface: ") + exc.details
+        elif exc.err == exc.ErrRegInterface:
+            msg = self.tr("Error registering interface: ") + exc.details
+        elif exc.err == exc.ErrAnotherDB:
+            msg = self.tr("These cards were exported from a different database!")
+        elif exc.err == ErrExportFailed:
+            msg = self.tr("Export failed!") + exc.details
+        elif exc.err == ErrCannotOpen:
+            msg = self.tr("Cannot open file: ") + exc.details
+        elif exc.err == ErrCannotFind:
+            msg = self.tr("Could not find: ") + exc.details
+        elif exc.err == ErrShortStats:
+            msg = self.tr("Too few fields in stats.csv: ") + exc.details
+
+        showError(msg)
 
     def markInactive(self, frame, label):
         pal = frame.palette();
@@ -134,7 +151,7 @@ class GogoDlg(QDialog):
         self.writeSettings()
         try:
             if self.settings['sync_path'] == '':
-                self.showError(u"A synchronization path must be set first!")
+                self.showError(tr("A synchronization path must be set first!"))
                 return
 
             if not os.path.exists(self.settings['sync_path']):
@@ -143,7 +160,7 @@ class GogoDlg(QDialog):
                 except: pass
 
             if not os.path.exists(self.settings['sync_path']):
-                self.showError(u"The synchronization path ('%s') is not valid!"
+                self.showError(tr("The synchronization path ('%s') is not valid!")
                                 % self.settings['sync_path'])
                 return
 
@@ -165,13 +182,10 @@ class GogoDlg(QDialog):
             self.setMobile()
             if logger().check_log_status():
                 self.showWarning(
-                    u"Messages were written to gogolog.txt in the "
-                    + u"Mnemosyne home directory.")
+                    tr(u"Messages were written to gogolog.txt in the Mnemosyne home directory."))
 
-        except InterfaceError, e:
-            self.showError(unicode(e))
         except Mnemogogo, e:
-            self.showError(unicode(e))
+            self.showMnemogogoError(e)
         except Exception:
             self.showError(traceback.format_exc())
 
@@ -194,13 +208,10 @@ class GogoDlg(QDialog):
             
             if logger().check_log_status():
                 self.showWarning(
-                    u"Messages were written to log.txt in the "
-                    + u"Mnemosyne home directory.")
+                    tr(u"Messages were written to log.txt in the Mnemosyne home directory."))
 
-        except InterfaceError, e:
-            self.showError(unicode(e))
         except Mnemogogo, e:
-            self.showError(unicode(e))
+            self.showMnemogogoError(e)
         except Exception:
             self.showError(traceback.format_exc())
 
@@ -244,10 +255,8 @@ class GogoDlg(QDialog):
                         self.name_to_index[settings['interface']])
             except KeyError:
                 self.showWarning(
-                    tr("".join(["The interface '",
-                        settings['interface'],
-                        "' is not currently available. ",
-                        "Please select another."])))
+                    tr("The interface '%s' is not currently available. Please select another.")
+                    % settings['interface'])
 
         if settings.has_key('n_days'):
             self.ui.daysToExport.setValue(settings['n_days'])

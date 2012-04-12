@@ -56,12 +56,13 @@ except Exception, e:
     mnemogogo_imported = False
     mnemogogo_imported_error = str(e)
 
+def tr(msg):
+    return QCoreApplication.translate("Mnemogogo", msg)
+
 name = 'Mnemogogo'
 version = "2.0.0"
 exported_tag_name = "Mnemogogo"
-
-def tr(text):
-    return QCoreApplication.translate("Mnemogogo", text)
+description = tr("Making mnemosyne mobile") + " (v" + version + ")"
 
 class MnemogogoConfig(Hook):
     used_for = "configuration_defaults"
@@ -113,7 +114,8 @@ class MnemogogoReviewWdgt(ReviewWdgt):
 
         bd = self.config().data_dir
         lock_msg_main = tr("Mobile reviewing is enabled.")
-        lock_msg_info = tr("Choose Mnemogogo from the Cards menu for options.")
+        lock_msg_info = tr(
+                "Choose Mnemogogo from the Cards menu for options.")
         html =  '<html>'
         html += '<body style="margin:0; padding:0; border:thin solid #8F8F8F;">'
         html += '<div style="height:200px; width:400px; position:absolute;'
@@ -133,7 +135,7 @@ class MnemogogoReviewWdgt(ReviewWdgt):
         self.gogoinfo.setSizePolicy(sizePolicy)
         self.gogoinfo.setMinimumSize(QSize(295, 50))
         self.gogoinfo.setHtml(html)
-        self.gogoinfo.setObjectName("Mnemogogo message")
+        self.gogoinfo.setObjectName(tr("Mnemogogo message"))
         self.question_box.addWidget(self.gogoinfo)
 
         for plugin in component_manager.all("plugin"):
@@ -155,7 +157,7 @@ class MnemogogoReviewWdgt(ReviewWdgt):
 
 class MnemogogoPlugin(Plugin):
     name = name
-    description = "Making mnemosyne mobile (v" + version + ")"
+    description = description
 
     components = [MnemogogoConfig, MnemogogoRenderChain, MnemogogoReviewWdgt]
 
@@ -195,10 +197,9 @@ class MnemogogoPlugin(Plugin):
         # Show a warning on first run
         first_run = self.settings['first_run']
         if first_run:
-            msg = ("Please use the 2.x versions of Mnemododo/jojo for "
-                +  "full compatibility with Mnemosyne's new synchronisation "
-                +  "protocol.")
-            QMessageBox.warning(None, tr("Mnemogogo"), tr(msg),
+            msg = tr("Please use the 2.x versions of Mnemododo/jojo \
+for full compatibility with Mnemosyne's new synchronisation protocol.")
+            QMessageBox.warning(None, "Mnemogogo", msg,
                                  tr("&OK"), "", "", 0, -1)
 
         mobile_before = self.settings['mode'] == 'mobile'
@@ -218,11 +219,10 @@ class MnemogogoPlugin(Plugin):
             else:
                 self.unlock()
         except KeyError:
-            self.show_error("Missing state."
-                + "Mnemogogo could not determine whether it should "
-                + " be in local or mobile mode. Please use the "
-                + "'Force to Mobile' and 'Force to Local' buttons to "
-                + "establish the correct state.")
+            self.show_error(tr("Missing state. Mnemogogo could not \
+determine whether it should be in local or mobile mode. Please use the \
+'Force to Mobile' and 'Force to Local' buttons to establish the correct \
+state."))
             self.unlock()
 
         if mobile_before and not mobile_after:
@@ -232,10 +232,10 @@ class MnemogogoPlugin(Plugin):
 
     def show_error(self, msg):
         try:
-            QMessageBox.critical(None, tr("Mnemogogo"), tr(msg),
+            QMessageBox.critical(None, "Mnemogogo", msg,
                                  tr("&OK"), "", "", 0, -1)
         except TypeError:
-            QMessageBox.critical(None, tr("Mnemogogo"), msg, tr("&OK"),
+            QMessageBox.critical(None, "Mnemogogo", msg, tr("&OK"),
                                  "", "", 0, -1)
 
     def lock(self):
@@ -285,15 +285,14 @@ class MnemogogoPlugin(Plugin):
         basedir = self.config().data_dir
 
         if not exists(join(basedir, "plugins", "mnemogogo")):
-            self.show_error("Incorrect installation. Missing "
-                + join(basedir, "plugins", "mnemogogo")
-                + " directory")
+            self.show_error(tr(
+                    "Incorrect installation. Missing %s directory")
+                    % join(basedir, "plugins", "mnemogogo"))
             return
 
         if not mnemogogo_imported:
-            self.show_error("Incorrect installation."
-                + " The mnemogogo module could not be imported.\n\n("
-                + mnemogogo_imported_error + ")")
+            self.show_error(tr("Incorrect installation. The mnemogogo \
+module could not be imported.") + "\n\n(" + mnemogogo_imported_error + ")")
             return
         
         mnemogogo.set_logger(mnemogogo.Logger(basedir))
@@ -311,7 +310,8 @@ class MnemogogoPlugin(Plugin):
         # Add Menu Item
         self.menu_action = QAction("&Mnemogogo", self.main_widget(),
                 shortcut=QKeySequence(Qt.ControlModifier + Qt.Key_M),
-                statusTip="Transfer cards to and from your mobile device.",
+                statusTip=tr(
+                    "Transfer cards to and from your mobile device."),
                 triggered=self.open_dialog)
 
         self.main_widget().menu_Cards.addAction(self.menu_action)

@@ -100,11 +100,27 @@ learning_data_len = {
 
 easiness_accuracy = 1000
 
+class Mnemogogo(Exception):
+
+    # Core errors
+
+    ErrInitInterface = 0
+    ErrRegInterface  = 1
+    ErrAnotherDB     = 2
+
+    # Interface errors
+    ErrExportFailed  = 100
+    ErrCannotOpen    = 101
+    ErrCannotFind    = 102
+    ErrShortStats    = 103
+
+    def __init__(self, err, details, iface=None):
+        self.err = err
+        self.details = details
+        self.iface = iface
+
 ######################################################################
 # Interfaces
-
-class InterfaceError(Exception):
-    pass
 
 class Job:
     learning_data = learning_data
@@ -120,9 +136,8 @@ class Job:
     def close(self):
         pass
 
-    def error(self, msg):
-        title = self.interface.description + ' interface: '
-        raise InterfaceError(title + msg)
+    def error(self, err, details):
+        raise Mnemogogo(err, details, iface=self.interface.description)
 
 class Export(Job):
     re_img_split = re.compile(r'(<img.*?>)')
@@ -138,6 +153,10 @@ class Export(Job):
                         + 'src\s*=\s*"(file:(\\\\\\\\\\\\|//))(?P<path>[^"]*)"'
                         + '(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
+
+    ErrExportFailed  = Mnemogogo.ErrExportFailed
+    ErrCannotOpen    = Mnemogogo.ErrCannotOpen
+    ErrCannotFind    = Mnemogogo.ErrCannotFind
 
     def __init__(self, interface, sync_path, debug):
         Job.__init__(self, interface, sync_path, debug)
@@ -347,6 +366,10 @@ class Export(Job):
         return '\n'.join(ntext)
 
 class Import(Job):
+    ErrCannotOpen    = Mnemogogo.ErrCannotOpen
+    ErrCannotFind    = Mnemogogo.ErrCannotFind
+    ErrShortStats    = Mnemogogo.ErrShortStats
+
     def __iter__(self):
         self.open()
         return self
@@ -367,10 +390,6 @@ class Import(Job):
     # implement in plugin
     def read(self):
         return None
-
-    # implement in plugin
-    def get_start_date(self):
-        raise Exception('The plugin does not implement get_start_date!')
 
 class Interface:
     __metaclass__ = _RegisteredInterface
@@ -396,9 +415,6 @@ class Interface:
 ######################################################################
 # Implementation
 
-class Mnemogogo(Exception):
-    pass
-
 interfaces = []
 
 def register_interfaces(basedir):
@@ -411,16 +427,16 @@ def register_interfaces(basedir):
         
         try:
             __import__("mnemogogo.interface." + file[:-3])
-        except: raise Mnemogogo('Error initialising interface: ' + file
-                                + '\n' + traceback.format_exc())
+        except: raise Mnemogogo(Mnemogogo.ErrInitInterface, 
+                                file + '\n' + traceback.format_exc())
 
     for iface in interface_classes:
         try:
             obj = iface()
             name = iface.__name__
             desc = obj.description
-        except: raise Mnemogogo('Error registering interface: ' + file
-                                + '\n' + traceback.format_exc())
+        except: raise Mnemogogo(Mnemogogo.ErrRegInterface,
+                                file + '\n' + traceback.format_exc())
 
         interfaces.append({ 'name' : name,
                             'description' : desc,
@@ -722,11 +738,9 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
         curr_database = get_database(mnemoconfig).encode('punycode')[-max_config_size:]
         load_database = import_config['database']
         if load_database != curr_database:
-            raise Mnemogogo("These cards were exported from '"
-                    + load_database
-                    + "', but the current database is '"
-                    + curr_database
-                    + "'!")
+            raise Mnemogogo(Mnemogogo.ErrAnotherDB,
+                            (load_database, curr_database))
+                    
  
     if import_config.has_key('day_starts_at'):
         day_starts_at = int(import_config['day_starts_at'])

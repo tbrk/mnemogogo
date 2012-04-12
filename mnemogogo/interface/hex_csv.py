@@ -52,7 +52,7 @@ class BasicExport(mnemogogo.Export):
         try:
             self.cardfile = open(self.cardfile_path, 'wb')
         except Exception, e:
-            self.error("Export failed!\n\n(" + str(e) + ")")
+            self.error(self.ErrExportFailed, "\n\n(" + str(e) + ")")
         self.cardfile.write(str(num_cards) + '\n')
 
         self.img_path = join(self.sync_path, 'IMG')
@@ -174,16 +174,17 @@ class Import(mnemogogo.Import):
             try:
                 self.statfile = open(statpath, 'r')
             except IOError, e:
-                self.error("Cannot open '%s'!\n\n(%s)" % (statpath, str(e)))
+                self.error(self.ErrCannotOpen, "'%s'\n\n(%s)"
+                                                    % (statpath, str(e)))
         except IOError:
-            self.error('Could not find: ' + statpath)
+            self.error(self.ErrCannotFind, "'%s'" % statpath)
 
         self.num_cards = int(self.statfile.readline())
         try:
             self.idfile = open(join(self.sync_path, 'IDS'), 'r')
         except IOError, e:
-            self.error("Cannot open '%sIDS'!\n\n(%s)" %
-                       (self.sync_path, str(e)))
+            self.error(self.ErrCannotOpen, " '%sIDS'!\n\n(%s)"
+                                            % (self.sync_path, str(e)))
         self.num_stats = len(self.learning_data)
         self.line = 0
         self.serial_num = 0
@@ -238,7 +239,7 @@ class Import(mnemogogo.Import):
 
         stats = map(lambda x: int (x, 16), fields[0:self.num_stats])
         if len(stats) != self.num_stats:
-            self.error("stats.csv:" + str(self.line) + ":too few fields")
+            self.error(self.ErrShortStats, "'%s'" % str(self.line))
 
         self.serial_num += 1
         self.percentage_complete = (self.serial_num * 100) / self.num_cards
@@ -265,8 +266,8 @@ class Import(mnemogogo.Import):
         try:
             cfile = open(join(self.sync_path, 'CONFIG'), 'rb')
         except IOError, e:
-            self.error("Cannot open '%sCONFIG'!\n\n(%s)" %
-                       (self.sync_path, str(e)))
+            self.error(self.ErrCannotOpen, "'%sCONFIG'!\n\n(%s)"
+                                           % (self.sync_path, str(e)))
 
         configline_re = re.compile(r'(?P<name>[^=]+)=(?P<value>.*)')
 
@@ -279,12 +280,6 @@ class Import(mnemogogo.Import):
 
         cfile.close()
         return config
-
-    def get_start_date(self, config=None):
-        if (config is None):
-            config = self.read_config()
-        [year, month, day] = config['start_date'].split('-')
-        return datetime.date(int(year), int(month), int(day))
 
 # Mnemojojo Exporter
 
