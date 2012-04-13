@@ -39,7 +39,7 @@ except ImportError:
     from md5 import md5
 
 def tr(msg):
-    return QtCore.QCoreApplication.translate(msg, "Mnemogogo")
+    return QtCore.QCoreApplication.translate("Mnemogogo", msg)
 
 name = "Gogorender"
 version = "2.0.1"
