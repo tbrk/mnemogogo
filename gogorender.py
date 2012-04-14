@@ -124,7 +124,7 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         vlayout.addLayout(toplayout)
 
     def apply(self):
-        was_default_render = self.config()["gogorender"]["default_render"]
+        was_default_render = self.setting('default_render')
 
         config = self.config()['gogorender']
 
@@ -488,7 +488,7 @@ class GogorenderPlugin(Plugin):
         Plugin.activate(self)
 
         try:
-            if  self.config()['gogorender']['default_render']:
+            if self.config()['gogorender']['default_render']:
                 render_chains.append('default')
         except KeyError: pass
 
