@@ -313,6 +313,7 @@ class Gogorender(Filter):
         doc.setDocumentMargin(0.0)
         doc.setIndentWidth(0.0)
         doc.setUseDesignMetrics(True)
+        doc.setDefaultFont(font)
 
         option = QtGui.QTextOption()
         option.setTextDirection(QtCore.Qt.RightToLeft)
