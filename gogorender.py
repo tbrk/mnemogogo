@@ -58,6 +58,7 @@ default_config = {
     'not_render_char'  : u'[—≠–œ‘’“”…€]',
     'render_line_tags' : u'',
     'max_line_width'   : 240,
+    'font_scaling'     : 1.0,
 
     'default_render'  : False,
 }
@@ -112,6 +113,11 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
         toplayout.addRow(tr("Maximum line width (pixels):"),
                 self.max_line_width)
 
+        self.font_scaling = QtGui.QSpinBox(self)
+        self.font_scaling.setRange(1, 1000)
+        self.font_scaling.setValue(int(self.setting('font_scaling') * 100))
+        toplayout.addRow(tr("Font scaling (percentage):"), self.font_scaling)
+
         self.transparent = QtGui.QCheckBox(self)
         self.transparent.setChecked(self.setting("transparent"))
         toplayout.addRow(tr("Render with transparency:"), self.transparent)
@@ -130,9 +136,10 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
 
         config["not_render_char"]  = u"[%s]" % unicode(self.not_render_char.text())
         config["render_line_tags"] = u"%s" % unicode(self.render_line_tags.text())
-        config["transparent"]     = self.transparent.isChecked()
-        config["default_render"]  = self.default_render.isChecked()
-        config["max_line_width"]  = self.max_line_width.value()
+        config["transparent"]      = self.transparent.isChecked()
+        config["default_render"]   = self.default_render.isChecked()
+        config["max_line_width"]   = self.max_line_width.value()
+        config["font_scaling"]     = float(self.font_scaling.value()) / 100.0
 
         imgpath = self.setting("imgpath")
         if os.path.exists(imgpath): shutil.rmtree(imgpath)
@@ -452,6 +459,9 @@ class Gogorender(Filter):
                 if self.debug:
                     self.component_manager.debug(
                         u'gogorender: word="%s"' % word)
+
+                font.setPointSizeF(font.pointSize() *
+                                    self.setting('font_scaling'))
 
                 if render_line:
                     html = unicode(pos.selection().toHtml())
