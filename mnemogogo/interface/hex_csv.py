@@ -183,8 +183,8 @@ class Import(mnemogogo.Import):
         try:
             self.idfile = open(join(self.sync_path, 'IDS'), 'r')
         except IOError, e:
-            self.error(self.ErrCannotOpen, " '%sIDS'!\n\n(%s)"
-                                            % (self.sync_path, str(e)))
+            self.error(self.ErrCannotOpen, " '%s'!\n\n(%s)"
+                        % (join(self.sync_path, 'IDS'), str(e)))
         self.num_stats = len(self.learning_data)
         self.line = 0
         self.serial_num = 0
@@ -266,8 +266,8 @@ class Import(mnemogogo.Import):
         try:
             cfile = open(join(self.sync_path, 'CONFIG'), 'rb')
         except IOError, e:
-            self.error(self.ErrCannotOpen, "'%sCONFIG'!\n\n(%s)"
-                                           % (self.sync_path, str(e)))
+            self.error(self.ErrCannotOpen, "'%s'!\n\n(%s)"
+                           % (join(self.sync_path, 'CONFIG'), str(e)))
 
         configline_re = re.compile(r'(?P<name>[^=]+)=(?P<value>.*)')
 

@@ -45,16 +45,16 @@ class GogoDlg(QDialog):
             msg = self.tr("Error registering interface: ") + exc.details
         elif exc.err == exc.ErrAnotherDB:
             msg = self.tr("These cards were exported from a different database!")
-        elif exc.err == ErrExportFailed:
+        elif exc.err == exc.ErrExportFailed:
             msg = self.tr("Export failed!") + exc.details
-        elif exc.err == ErrCannotOpen:
+        elif exc.err == exc.ErrCannotOpen:
             msg = self.tr("Cannot open file: ") + exc.details
-        elif exc.err == ErrCannotFind:
+        elif exc.err == exc.ErrCannotFind:
             msg = self.tr("Could not find: ") + exc.details
-        elif exc.err == ErrShortStats:
+        elif exc.err == exc.ErrShortStats:
             msg = self.tr("Too few fields in stats.csv: ") + exc.details
 
-        showError(msg)
+        self.showError(msg)
 
     def markInactive(self, frame, label):
         pal = frame.palette();
