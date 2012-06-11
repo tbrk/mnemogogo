@@ -372,6 +372,7 @@ class Import(Job):
 
     def __iter__(self):
         self.open()
+        self.num_log_entries = 0
         return self
 
     def next(self):
@@ -728,7 +729,7 @@ def log_repetition(mnemodb, repetition_chunk, rep_data={}, to_user={}):
         scheduled_interval, actual_interval,
         thinking_time, next_rep, scheduler_data=0)
 
-def do_import(interface, sync_path, mnemodb, mnemoconfig,
+def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
               debug_print, progress_bar=None):
     importer = interface.start_import(sync_path, debug_print)
     importer.progress_bar = progress_bar
@@ -750,7 +751,9 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
     new_stats = []
     to_user = {}
     rep_data = {}
+    count = 0
     for (card_id, stats) in importer:
+        count = count + 1
         try:
             card = mnemodb.card(card_id, is_id_internal=True)
 
@@ -764,15 +767,21 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
         else:
             logger().log_error("Quietly ignoring card with missing id: %s" % card_id)
 
-        if (progress_bar):
-            progress_bar.setProperty("value", importer.percentage_complete)
+        if (progress_bar and (count % 50 == 0)):
+            progress_bar.setProperty("value", importer.percentage_complete / 3)
+
+    log_total = importer.num_log_entries
 
     # Only update the database if the entire read is successful
     marked_cards   = []
     unmarked_cards = []
 
+    cards_done = 0
+    cards_total = len(new_stats) 
     for (card, stats) in new_stats:
+        cards_done = cards_done + 1
         if stats['unseen']: continue
+
         stats_to_card(stats, card, day_starts_at)
 
         if ('marked' in stats) and (stats['marked']):
@@ -780,7 +789,12 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
         else:
             unmarked_cards.append(card._id)
 
+        mnemoscheduler.avoid_sister_cards(card)
         mnemodb.update_card(card, repetition_only=True)
+
+        if (progress_bar and (cards_done % 50 == 0)):
+            progress_bar.setProperty("value",
+                 33 + ((cards_done * 100) / cards_total / 3))
 
     shutil.move(os.path.join(sync_path, 'STATS.CSV'),
                 os.path.join(sync_path, 'OLDSTATS.CSV'))
@@ -803,10 +817,15 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig,
         log = open(logpath)
 
         logger().log_info('starting log import')
+        log_done = 0
         line = log.readline()
         while line != '':
+            log_done = log_done + 1
             log_repetition(mnemodb, line.rstrip('\n'), rep_data, to_user)
             line = log.readline()
+            if (progress_bar and (log_done % 50 == 0)):
+                progress_bar.setProperty("value",
+                     66 + ((log_done * 100) / log_total / 3))
 
         logger().log_info('finished log import')
 

@@ -216,6 +216,7 @@ class Import(mnemogogo.Import):
                         r.group('logtype') + ' '
                         + self.serial_to_id[r.group('id')], line)
                 postlog.write(line)
+                self.num_log_entries = self.num_log_entries + 1
             except:
                 mnemogogo.logger().log_warning("ignoring log line: " + line)
 

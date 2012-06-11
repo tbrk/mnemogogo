@@ -200,6 +200,7 @@ class GogoDlg(QDialog):
                 self.settings['sync_path'],
                 self.mnemosyne_database,
                 self.mnemosyne_config,
+                self.mnemosyne_scheduler,
                 self.mnemosyne_debug,
                 self.ui.progressBar)
             self.setLocal()
@@ -231,10 +232,11 @@ class GogoDlg(QDialog):
             self.ui.syncPath.setText(d)
     
     def configure(self, settings, mnemosyne_config, database,
-                  review_controller, debug_print):
+                  review_controller, scheduler, debug_print):
         self.mnemosyne_config = mnemosyne_config
         self.mnemosyne_database = database
         self.mnemosyne_revcontroller = review_controller
+        self.mnemosyne_scheduler = scheduler
         self.mnemosyne_debug = debug_print
 
         if settings.has_key('mode'):
