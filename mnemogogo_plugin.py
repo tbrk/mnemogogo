@@ -106,7 +106,6 @@ class MnemogogoReviewWdgt(ReviewWdgt):
         mnemogogo.lock_enabling.add(self.show_button)
         mnemogogo.lock_enabling.add(self.grades)
         mnemogogo.lock_enabling.add(self.main_widget().actionManagePlugins)
-        mnemogogo.lock_enabling.add(self.main_widget().actionSync)
 
         mnemogogo.lock_visible.add(self.question)
         mnemogogo.lock_visible.add(self.question_label)
@@ -150,7 +149,6 @@ class MnemogogoReviewWdgt(ReviewWdgt):
         self.show_button.removeLocking()
         self.grades.removeLocking()
         self.main_widget().actionManagePlugins.removeLocking()
-        self.main_widget().actionSync.removeLocking()
 
         self.question.removeLocking()
         self.question_label.removeLocking()
@@ -264,7 +262,6 @@ state."))
                 widget.answer_label.hideAndLock()
                 widget.gogoinfo.show()
                 main_widget.actionManagePlugins.disableAndLock()
-                main_widget.actionSync.disableAndLock()
             else:
                 widget.show_button.unlockAndRestore()
                 widget.grades.unlockAndRestore()
@@ -274,7 +271,6 @@ state."))
                 widget.answer_label.unlockAndRestore()
                 widget.gogoinfo.hide()
                 main_widget.actionManagePlugins.unlockAndRestore()
-                main_widget.actionSync.unlockAndRestore()
 
         except Exception as e:
             pass
