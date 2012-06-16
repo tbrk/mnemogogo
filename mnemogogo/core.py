@@ -613,6 +613,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
     exporter.id_to_serial = dict(zip((str(i) for i in card_ids),
                                  range(0, total)))
     exporter.write_config(config)
+    count = 0
     for card_id in card_ids:
         card = mnemodb.card(card_id, is_id_internal=True)
         stats = card_to_stats(card, unseen_compat=True)
@@ -639,8 +640,9 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
         exporter.write(str(card_id), q, a, category, stats,
                        str(inverse_id), is_overlay)
 
-        if progress_bar:
+        if (progress_bar and (count % 50 == 0)):
             progress_bar.setProperty("value", exporter.percentage_complete)
+        count = count + 1
 
     exporter.close()
 
@@ -750,7 +752,6 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
     rep_data = {}
     count = 0
     for (card_id, stats) in importer:
-        count = count + 1
         try:
             card = mnemodb.card(card_id, is_id_internal=True)
 
@@ -766,6 +767,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
 
         if (progress_bar and (count % 50 == 0)):
             progress_bar.setProperty("value", importer.percentage_complete / 3)
+        count = count + 1
 
     log_total = importer.num_log_entries
 
