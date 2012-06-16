@@ -312,7 +312,8 @@ class Export(Job):
                     name = src_root.encode('punycode').upper()\
                                 .replace(' ', '_')\
                                 .replace('?', '_qu-')\
-                                .replace('*', '_ast-')
+                                .replace('*', '_ast-')\
+                                .replace(':', '_col-')
                     name = name + self.directory_index(src_dir)
                 self.img_cnt += 1
 
@@ -339,7 +340,11 @@ class Export(Job):
                 if self.name_with_numbers:
                     name = '%08X' % self.snd_cnt
                 else:
-                    name = src_root.encode('punycode').upper().replace(' ', '_')
+                    name = src_root.encode('punycode').upper()\
+                                .replace(' ', '_')\
+                                .replace('?', '_qu-')\
+                                .replace('*', '_ast-')\
+                                .replace(':', '_col-')
                     name = name + self.directory_index(src_dir)
                 self.snd_cnt += 1
 
