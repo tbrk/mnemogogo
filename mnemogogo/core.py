@@ -29,14 +29,6 @@ from PyQt4.QtGui import QImage
 
 interface_classes = []
 
-# TODO:
-# * Upgrade mobile clients to distinguish between 1.x and 2.x exports.
-#   (see card_to_stats and log_repetition)
-#   - add a config entry: file_format = 1.0 or 2.0, default to 1.0
-#   - add a dropdown entry to select the new client? or a note?
-# * 2.x: need to log last_rep and next_rep to avoid calculating them and
-#        fix the inaccuracy for never-reviewed cards
-
 _logger = None
 max_config_size = 50
 HOUR = 60 * 60
