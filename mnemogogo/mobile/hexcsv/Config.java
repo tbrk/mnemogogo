@@ -45,7 +45,7 @@ public class Config
 
     private void setDefaults()
     {
-        data.put("log_format", "2");
+        data.put("log_format", "1");
         data.put("grade_0_items_at_once", "10");
         data.put("sorting", "1");
         data.put("logging", "1");

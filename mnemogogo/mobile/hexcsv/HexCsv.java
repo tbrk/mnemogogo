@@ -41,6 +41,8 @@ abstract class HexCsv
     private boolean specify_encoding;
     private boolean allow_skip_categories;
 
+    private int logFormat;
+
     public long days_since_start;
     public OutputStreamWriter logfile;
     public String categories[];
@@ -73,6 +75,7 @@ abstract class HexCsv
         progress = prog;
 
         readConfig(pathbuf);
+        logFormat = config.logFormat();
 
         days_left = daysLeft(config.lastDay());
         days_since_start = daysSinceStart(config.startDay());
@@ -183,6 +186,11 @@ abstract class HexCsv
 
         config = new Config(in);
         in.close();
+    }
+
+    public int logFormat()
+    {
+        return logFormat;
     }
 
     public long nowInDays()
