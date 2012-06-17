@@ -173,6 +173,7 @@ class GogoDlg(QDialog):
                 self.settings['sync_path'],
                 self.mnemosyne_database,
                 self.mnemosyne_config,
+                self.card_types,
                 self.mnemosyne_debug,
                 self.ui.progressBar,
                 self.settings['extra_factor'],
@@ -232,12 +233,13 @@ class GogoDlg(QDialog):
             self.ui.syncPath.setText(d)
     
     def configure(self, settings, mnemosyne_config, database,
-                  review_controller, scheduler, debug_print):
+                  review_controller, scheduler, component_manager):
         self.mnemosyne_config = mnemosyne_config
         self.mnemosyne_database = database
         self.mnemosyne_revcontroller = review_controller
         self.mnemosyne_scheduler = scheduler
-        self.mnemosyne_debug = debug_print
+        self.mnemosyne_debug = component_manager.debug
+        self.card_types = component_manager.all("card_type")
 
         if settings.has_key('mode'):
             self.mode = settings['mode']

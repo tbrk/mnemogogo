@@ -78,8 +78,9 @@ class MnemogogoRenderer(Renderer):
         add_br = False
         for fact_key in fact_keys:
             if fact_key in fact_data and fact_data[fact_key]:
-                if add_br: text += "<br/>"
-                text += fact_data[fact_key]
+                if add_br: text += '<br/>'
+                text += '<div id="%s">%s</div>' % (fact_key,
+                                                   fact_data[fact_key])
                 add_br = True
         return text
 
@@ -206,7 +207,7 @@ for full compatibility with Mnemosyne's new synchronisation protocol.")
 
         self.gogo_dlg.configure(self.settings, self.config(), self.database(),
                                 self.review_controller(), self.scheduler(),
-                                self.component_manager.debug)
+                                self.component_manager)
         self.gogo_dlg.exec_()
         self.settings = self.gogo_dlg.settings
         self.settings['first_run'] = False

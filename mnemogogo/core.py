@@ -167,6 +167,8 @@ class Export(Job):
         self.img_to_landscape = False
         self.img_to_ext = None
 
+        self.with_default_styles = False
+
     # implement in plugin
     def open(self, start_date, num_days, num_cards, params):
         pass
@@ -176,6 +178,9 @@ class Export(Job):
         pass
 
     def write_config(self, config):
+        pass
+
+    def write_style(self, csstext):
         pass
 
     # # # Utility routines # # #
@@ -572,8 +577,63 @@ def dictlist(keyvals):
             r[k] = [v]
     return r
 
-def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
-              progress_bar=None, extra = 1.00, max_width = 240,
+# Adapted from Peter Bienstman's HtmlCSS renderer
+def card_type_css(config, card_type):
+
+    card_type_name = card_type.name.replace(' ', '_')
+    css = "div.%s { " % card_type_name
+
+    alignment = config.card_type_property("alignment", card_type)
+    if alignment == "left":
+        css += "margin-left: 0; margin-right: auto; "
+    elif alignment == "right":
+        css += "margin-left: auto; margin-right: 0; "
+
+    colour = config.card_type_property("background_colour", card_type)
+    if colour:
+        colour_string = ("%X" % colour)[2:] # Strip alpha.
+        css += "background-color: #%s; " % colour_string
+
+    css += " }\n"
+
+    # key tags.
+    for true_fact_key, proxy_fact_key in \
+        card_type.fact_key_format_proxies().iteritems():
+        css += "div.%s div.%s { " % (card_type_name, true_fact_key)
+
+        # Font colours.
+        colour = config.card_type_property(\
+            "font_colour", card_type, proxy_fact_key)
+        if colour:
+            colour_string = ("%X" % colour)[2:] # Strip alpha.
+            css += "color: #%s; " % colour_string
+
+        # Font.
+        font_string = config.card_type_property(\
+            "font", card_type, proxy_fact_key)
+        if font_string:
+            family,size,x,x,w,i,u,s,x,x = font_string.split(",")
+            css += "font-family: \"%s\"; " % family
+            css += "font-size: %spt; " % size
+            if w == "25":
+                css += "font-weight: light; "
+            if w == "75":
+                css += "font-weight: bold; "
+            if i == "1":
+                css += "font-style: italic; "
+            if i == "2":
+                css += "font-style: oblique; "
+            if u == "1":
+                css += "text-decoration: underline; "
+            if s == "1":
+                css += "text-decoration: line-through; "
+
+        css += "}\n"
+
+    return css
+
+def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
+              debug_print, progress_bar=None, extra = 1.00, max_width = 240,
               max_height = 300, max_size = 64):
 
     basedir = mnemoconfig.data_dir
@@ -630,12 +690,18 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
         except KeyError: inverse_id = None
         except IndexError: inverse_id = None
 
+        tags = [t.name for t in card.tags
+                       if t.name != marked_tag and t.name != "__UNTAGGED__"]
         try:
-            category = [t.name for t in card.tags
-                               if t.name != marked_tag
-                                    and t.name != "__UNTAGGED__"][0]
+            category = tags[0]
         except IndexError:
             category = 'None'
+
+        if exporter.with_default_styles:
+            tags.append(card.card_type.name.replace(' ', '_'))
+            classes = " ".join(tags)
+            q = '<div id="q" class="%s"><div>%s' % (classes, q) # closed in mobile client
+            a = '<div id="a" class="%s"><div>%s' % (classes, a) # closed in mobile client
 
         exporter.write(str(card_id), q, a, category, stats,
                        str(inverse_id), is_overlay)
@@ -643,6 +709,12 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, debug_print,
         if (progress_bar and (count % 50 == 0)):
             progress_bar.setProperty("value", exporter.percentage_complete)
         count = count + 1
+
+    if exporter.with_default_styles:
+        css = ""
+        for card_type in card_types:
+            css += card_type_css(mnemoconfig, card_type)
+        exporter.write_style(css)
 
     exporter.close()
 
@@ -773,6 +845,7 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
     # Only update the database if the entire read is successful
     marked_facts   = []
     unmarked_facts = []
+    tags = []
 
     cards_done = 0
     cards_total = len(new_stats) 

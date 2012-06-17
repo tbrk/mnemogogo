@@ -127,6 +127,11 @@ class BasicExport(mnemogogo.Export):
 
         cfile.close()
 
+    def write_style(self, css):
+        cfile = open(join(self.sync_path, 'DEFAULT.CSS'), 'wb')
+        cfile.write(css)
+        cfile.close()
+
     def write(self, id, q, a, cat, stats, inverse_id=None, is_overlay=False):
         # Write stats
         for s in self.learning_data:
@@ -387,6 +392,7 @@ class JojoHexCsv(mnemogogo.Interface):
         e.img_to_landscape = False
         e.img_to_ext = self.ext
         e.name_with_numbers = False
+        e.with_default_styles = False
         return e
 
     def start_import(self, sync_path, debug):
@@ -403,6 +409,7 @@ class DodoHexCsv(mnemogogo.Interface):
         e.img_to_landscape = False
         e.img_to_ext = self.ext
         e.name_with_numbers = False
+        e.with_default_styles = True
         return e
 
     def start_import(self, sync_path, debug):
