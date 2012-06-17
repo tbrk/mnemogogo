@@ -741,7 +741,6 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
             raise Mnemogogo(Mnemogogo.ErrAnotherDB,
                             (load_database, curr_database))
                     
- 
     if import_config.has_key('day_starts_at'):
         day_starts_at = int(import_config['day_starts_at'])
     else:
@@ -772,8 +771,8 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
     log_total = importer.num_log_entries
 
     # Only update the database if the entire read is successful
-    marked_cards   = []
-    unmarked_cards = []
+    marked_facts   = []
+    unmarked_facts = []
 
     cards_done = 0
     cards_total = len(new_stats) 
@@ -784,9 +783,9 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
         stats_to_card(stats, card, day_starts_at)
 
         if ('marked' in stats) and (stats['marked']):
-            marked_cards.append(card._id)
+            marked_facts.append(card.fact)
         else:
-            unmarked_cards.append(card._id)
+            unmarked_facts.append(card.fact)
 
         mnemoscheduler.avoid_sister_cards(card)
         mnemodb.update_card(card, repetition_only=True)
@@ -795,20 +794,33 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
             progress_bar.setProperty("value",
                  33 + ((cards_done * 100) / cards_total / 3))
 
-    shutil.move(os.path.join(sync_path, 'STATS.CSV'),
-                os.path.join(sync_path, 'OLDSTATS.CSV'))
-
     # Update cards tagged as 'marked'
-    if unmarked_cards:
-        tags = [ tag for tag in mnemodb.tags() if tag.name == marked_tag]
+    if unmarked_facts:
+        tags = [tag for tag in mnemodb.tags() if tag.name == marked_tag]
         if tags:
-            mnemodb.remove_tag_from_cards_with_internal_ids(tags[0], unmarked_cards)
+            # The Mnemosyne UI does not properly support tagging cards, so all
+            # sister cards must also be untagged.
+            unmarked_cards = set()
+            for fact in unmarked_facts:
+                unmarked_cards.update([card._id for card in mnemodb.cards_from_fact(fact)])
+            mnemodb.remove_tag_from_cards_with_internal_ids(tags[0],
+                                                        list(unmarked_cards))
 
-    if marked_cards:
+    if marked_facts:
         tag = mnemodb.get_or_create_tag_with_name(marked_tag)
-        mnemodb.add_tag_to_cards_with_internal_ids(tag, marked_cards)
+
+        # The Mnemosyne UI does not properly support tagging cards, so all
+        # sister cards must also be tagged.
+        marked_cards = set()
+        for fact in marked_facts:
+            marked_cards.update([card._id for card in mnemodb.cards_from_fact(fact)])
+        mnemodb.add_tag_to_cards_with_internal_ids(tag, list(marked_cards))
+
     elif tags:
         mnemodb.delete_tag_if_unused(tags[0])
+
+    shutil.move(os.path.join(sync_path, 'STATS.CSV'),
+                os.path.join(sync_path, 'OLDSTATS.CSV'))
 
     # Import logging details
     logpath = os.path.join(sync_path, 'LOG')
