@@ -156,8 +156,8 @@ class GogorenderConfigWdgt(QtGui.QWidget, ConfigurationWidget):
             if was_default_render:
                 self.render_chain('default').unregister_filter(Gogorender)
             else:
-                self.render_chain('default').register_at_back(Gogorender,
-                                                      before=["ExpandPaths"])
+                self.render_chain('default').register_filter_at_back(
+                        Gogorender, before=["ExpandPaths"])
 
 def moveprev(pos):
     pos.movePosition(QTextCursor.PreviousCharacter, QTextCursor.KeepAnchor)
@@ -517,8 +517,8 @@ class GogorenderPlugin(Plugin):
 
     def new_render_chain(self, name):
         if name in render_chains:
-            self.render_chain(name).register_at_back(Gogorender,
-                                                     before=["ExpandPaths"])
+            self.render_chain(name).register_filter_at_back(
+                    Gogorender, before=["ExpandPaths"])
 
 # Register plugin.
 
