@@ -105,6 +105,7 @@ class Mnemogogo(Exception):
     ErrCannotOpen    = 101
     ErrCannotFind    = 102
     ErrShortStats    = 103
+    ErrImportFailed  = 104
 
     def __init__(self, err, details, iface=None):
         self.err = err
@@ -149,6 +150,7 @@ class Export(Job):
     ErrExportFailed  = Mnemogogo.ErrExportFailed
     ErrCannotOpen    = Mnemogogo.ErrCannotOpen
     ErrCannotFind    = Mnemogogo.ErrCannotFind
+    ErrImportFailed  = Mnemogogo.ErrImportFailed
 
     def __init__(self, interface, sync_path, debug):
         Job.__init__(self, interface, sync_path, debug)
@@ -371,6 +373,7 @@ class Import(Job):
     ErrCannotOpen    = Mnemogogo.ErrCannotOpen
     ErrCannotFind    = Mnemogogo.ErrCannotFind
     ErrShortStats    = Mnemogogo.ErrShortStats
+    ErrImportFailed  = Mnemogogo.ErrImportFailed
 
     def __iter__(self):
         self.open()

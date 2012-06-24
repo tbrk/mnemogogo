@@ -53,6 +53,8 @@ class GogoDlg(QDialog):
             msg = self.tr("Could not find: ") + exc.details
         elif exc.err == exc.ErrShortStats:
             msg = self.tr("Too few fields in stats.csv: ") + exc.details
+        elif exc.err == exc.ErrImportFailed:
+            msg = self.tr("Import failed: ") + exc.details
 
         self.showError(msg)
 

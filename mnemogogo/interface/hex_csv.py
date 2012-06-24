@@ -184,7 +184,11 @@ class Import(mnemogogo.Import):
         except IOError:
             self.error(self.ErrCannotFind, "'%s'" % statpath)
 
-        self.num_cards = int(self.statfile.readline())
+        try:
+            self.num_cards = int(self.statfile.readline())
+        except ValueError:
+            self.error(self.ErrImportFailed, "STATS.CSV is corrupt.")
+
         try:
             self.idfile = open(join(self.sync_path, 'IDS'), 'r')
         except IOError, e:
