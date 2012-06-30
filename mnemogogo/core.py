@@ -522,13 +522,14 @@ def card_to_stats(card, unseen_compat=True):
             #   local (UTC+10): 2012-01-06 10:51
             # When we reduce this time stamp to days since the epoch in local
             # time, we want 0x3bf1 (Jan-6) not 0x3bf0 (Jan-5).
-            local = datetime.date.fromtimestamp(getattr(card, f)).timetuple()
+            local = datetime.date.fromtimestamp(
+                        max(getattr(card, f), 0)).timetuple()
             stats[f] = int(calendar.timegm(local) / DAY)
         elif f == 'next_rep':
             # Compatibility with Mnemosyne 1.x: next_rep in days, not
             # seconds; next_rep is always midnight (UTC) of the day when a
             # repetition is due, so we do not convert to local time.
-            stats[f] = int(getattr(card, f) / DAY)
+            stats[f] = int(max(getattr(card, f), 0) / DAY)
         else:
             stats[f] = int(getattr(card, f))
 

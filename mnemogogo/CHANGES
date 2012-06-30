@@ -1,4 +1,8 @@
-2011____ mnemogogo-2.0.0
+20120630 mnemogogo-2.0.1
+* Fix for a bug on export under windows:
+    ValueError: timestamp out of range for platform localtime() function.
+
+20120624 mnemogogo-2.0.0
 * Support for Mnemosyne 2.x
   - Upgrade GUI for Qt 4.x
   - Upgrade for new Mnemosyne internals
