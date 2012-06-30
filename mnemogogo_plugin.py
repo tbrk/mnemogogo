@@ -60,7 +60,7 @@ def tr(msg):
     return QCoreApplication.translate("Mnemogogo", msg)
 
 name = 'Mnemogogo'
-version = "2.0.0"
+version = "2.0.1"
 exported_tag_name = "Mnemogogo"
 description = tr("Making mnemosyne mobile") + " (v" + version + ")"
 
