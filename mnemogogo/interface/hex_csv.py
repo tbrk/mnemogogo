@@ -129,7 +129,7 @@ class BasicExport(mnemogogo.Export):
 
     def write_style(self, css):
         cfile = open(join(self.sync_path, 'DEFAULT.CSS'), 'wb')
-        cfile.write(css)
+        cfile.write(css.encode('UTF-8'))
         cfile.close()
 
     def write(self, id, q, a, cat, stats, inverse_id=None, is_overlay=False):

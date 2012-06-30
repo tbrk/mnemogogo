@@ -1,3 +1,7 @@
+20120630 mnemogogo-2.0.2
+* Fix a bug on export with unicode characters in the generated css
+    hex_csv.py:132 can't encode characters
+
 20120630 mnemogogo-2.0.1
 * Fix for a bug on export under windows:
     ValueError: timestamp out of range for platform localtime() function.
