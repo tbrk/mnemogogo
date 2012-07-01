@@ -1,3 +1,7 @@
+20120701 mnemogogo-2.0.3
+* Fix problems exporting images and sounds under Windows.
+* Use mkdtemp() rather than tempnam() to avoid popup warnings under Windows.
+
 20120630 mnemogogo-2.0.2
 * Fix a bug on export with unicode characters in the generated css
     hex_csv.py:132 can't encode characters
