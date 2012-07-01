@@ -114,6 +114,8 @@ class MnemogogoReviewWdgt(ReviewWdgt):
         mnemogogo.lock_visible.add(self.answer_label)
 
         bd = self.config().data_dir
+        if sys.platform == "win32": bd = "/" + bd
+
         lock_msg_main = tr("Mobile reviewing is enabled.")
         lock_msg_info = tr(
                 "Choose Mnemogogo from the Cards menu for options.")

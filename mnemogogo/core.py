@@ -19,6 +19,7 @@
 import sys
 import os
 import os.path
+import tempfile
 import shutil
 import re
 import itertools
@@ -33,6 +34,11 @@ _logger = None
 max_config_size = 50
 HOUR = 60 * 60
 DAY = 24 * HOUR
+
+if sys.platform == "win32":
+    qt_path_prefix = "///"
+else:
+    qt_path_prefix = "//"
 
 marked_tag = "Gogomarked"
 
@@ -134,17 +140,21 @@ class Job:
 
 class Export(Job):
     re_img_split = re.compile(r'(<img.*?>)')
-    re_img = re.compile( r'(?P<all>(?P<before><img\s+[^>]?)'
-                        + '((height|width)\s*=\s*"?[0-9]*"?\s*)*'
-                        + 'src\s*=\s*"(file:(\\\\\\\\\\\\|//))?(?P<path>[^"]*)"'
-                        + '((height|width)\s*=\s*"?[0-9]*"?)*'
-                        + '(?P<after>[^>]*/?>))',
+    re_img = re.compile(  r'(?P<all>(?P<before><img\s+[^>]?)'
+                        + r'((height|width)\s*=\s*"?[0-9]*"?\s*)*'
+                        + r'src\s*=\s*"(file:(\\\\\\\\\\\\|'
+                        + qt_path_prefix
+                        + r'))?(?P<path>[^"]*)"'
+                        + r'((height|width)\s*=\s*"?[0-9]*"?)*'
+                        + r'(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
     re_snd_split = re.compile(r'(<audio.*?>)')
-    re_snd = re.compile( r'(?P<all>(?P<before><audio\s+[^>]?)'
-                        + 'src\s*=\s*"(file:(\\\\\\\\\\\\|//))(?P<path>[^"]*)"'
-                        + '(?P<after>[^>]*/?>))',
+    re_snd = re.compile(  r'(?P<all>(?P<before><audio\s+[^>]?)'
+                        + r'src\s*=\s*"(file:(\\\\\\\\\\\\|'
+                        + qt_path_prefix
+                        + r'))(?P<path>[^"]*)"'
+                        + r'(?P<after>[^>]*/?>))',
                         re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
     ErrExportFailed  = Mnemogogo.ErrExportFailed
@@ -263,8 +273,7 @@ class Export(Job):
             (width, height) = (im.width(), im.height())
         
         if self.img_max_size:
-            tmpdstdir = os.tempnam()
-            os.mkdir(tmpdstdir)
+            tmpdstdir = tempfile.mkdtemp()
             tmpdst = os.path.join(tmpdstdir, '_gogo_scaling.png')
 
             r = im.save(tmpdst, 'PNG')
