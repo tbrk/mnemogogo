@@ -193,7 +193,7 @@ public class FindCardDirAndroid
     }
 
 
-    protected static Vector<String> list(File[] roots)
+    public static Vector<String> list(File[] roots)
     {
         Vector<String> paths = new Vector<String>();
 
