@@ -491,27 +491,27 @@ def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
     cards = list(db.cards_due_for_ret_rep(end_date))
 
     if limit > 0:
-        relearn1 = list(db.cards_to_relearn(grade=1, limit=limit))
+        relearn1 = random.shuffle(list(db.cards_to_relearn(grade=1)))[:limit]
         limit -= len(relearn1)
         cards.extend(relearn1)
 
     if limit > 0:
-        relearn0 = list(db.cards_to_relearn(grade=0, limit=limit))
+        relearn0 = random.shuffle(list(db.cards_to_relearn(grade=0)))[:limit]
         limit -= len(relearn0)
         cards.extend(relearn0)
 
     if limit > 0:
-        newmem0 = list(db.cards_new_memorising(grade=0, limit=limit))
+        newmem0 = random.shuffle(list(db.cards_new_memorising(grade=0)))[:limit]
         limit -= len(newmem0)
         cards.extend(newmem0)
 
     if limit > 0:
-        newmem1 = list(db.cards_new_memorising(grade=1, limit=limit))
+        newmem1 = random.shuffle(list(db.cards_new_memorising(grade=1)))[:limit]
         limit -= len(newmem1)
         cards.extend(newmem1)
 
     if limit > 0:
-        unseen = list(db.cards_unseen(limit=limit))
+        unseen = random.shuffle(list(db.cards_unseen()))[:limit]
         cards.extend(unseen)
 
     return cards
