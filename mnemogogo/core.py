@@ -486,33 +486,38 @@ def cards_for_ndays(db, days = 0, extra = 1.00, day_starts_at = 3,
                     grade_0_items_at_once = 5):
             
     end_date = adjusted_now(time.time() + days * DAY, day_starts_at)
-    limit = grade_0_items_at_once * (days + 1) * extra
+    limit = int(grade_0_items_at_once * (days + 1) * extra)
 
     cards = list(db.cards_due_for_ret_rep(end_date))
 
     if limit > 0:
-        relearn1 = random.shuffle(list(db.cards_to_relearn(grade=1)))[:limit]
+        relearn1 = list(db.cards_to_relearn(grade=1))
+        random.shuffle(relearn1)
+        cards.extend(relearn1[:limit])
         limit -= len(relearn1)
-        cards.extend(relearn1)
 
     if limit > 0:
-        relearn0 = random.shuffle(list(db.cards_to_relearn(grade=0)))[:limit]
+        relearn0 = list(db.cards_to_relearn(grade=0))
+        random.shuffle(relearn0)
+        cards.extend(relearn0[:limit])
         limit -= len(relearn0)
-        cards.extend(relearn0)
 
     if limit > 0:
-        newmem0 = random.shuffle(list(db.cards_new_memorising(grade=0)))[:limit]
+        newmem0 = list(db.cards_new_memorising(grade=0))
+        random.shuffle(newmem0)
+        cards.extend(newmem0[:limit])
         limit -= len(newmem0)
-        cards.extend(newmem0)
 
     if limit > 0:
-        newmem1 = random.shuffle(list(db.cards_new_memorising(grade=1)))[:limit]
+        newmem1 = list(db.cards_new_memorising(grade=1))
+        random.shuffle(newmem1)
+        cards.extend(newmem1[:limit])
         limit -= len(newmem1)
-        cards.extend(newmem1)
 
     if limit > 0:
-        unseen = random.shuffle(list(db.cards_unseen()))[:limit]
-        cards.extend(unseen)
+        unseen = list(db.cards_unseen())
+        random.shuffle(unseen)
+        cards.extend(unseen[:limit])
 
     return cards
 
