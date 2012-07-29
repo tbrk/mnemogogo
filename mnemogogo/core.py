@@ -650,6 +650,18 @@ def card_type_css(config, card_type):
 
     return css
 
+def make_tag_map(cards):
+    tagmap = {}
+    for card_id, card in cards:
+        tags = [t.name for t in card.tags
+                       if t.name != marked_tag and t.name != "__UNTAGGED__"]
+        if len(tags) == 0:
+            tagmap[card_id] = ['None']
+        else:
+            tagmap[card_id] = tags
+
+    return tagmap
+
 def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
               debug_print, progress_bar=None, extra = 1.00, max_width = 240,
               max_height = 300, max_size = 64):
@@ -678,11 +690,18 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
             'max_size' : max_size,
         }
 
-    cards = cards_for_ndays(mnemodb, num_days, extra,
+    card_fact_ids = cards_for_ndays(mnemodb, num_days, extra,
                             int(mnemoconfig["day_starts_at"]), grade_0_at_once)
-    card_ids = [ card_id for card_id, fact_id in cards ]
-    card_to_fact = dict(cards)
-    fact_to_card = dictlist((v, k) for k, v in cards)
+    card_ids = [ card_id for card_id, fact_id in card_fact_ids ]
+    card_to_fact = dict(card_fact_ids)
+    fact_to_card = dictlist((v, k) for k, v in card_fact_ids)
+
+    cards = [(card_id, mnemodb.card(card_id, is_id_internal=True))
+             for card_id in card_ids]
+    card_tags = make_tag_map(cards)
+    # ensure alphabetical order
+    exporter.categories = sorted(
+            list(set([tags[0] for tags in card_tags.values()])))
 
     total = len(cards)
     current = 0
@@ -692,8 +711,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
                                  range(0, total)))
     exporter.write_config(config)
     count = 0
-    for card_id in card_ids:
-        card = mnemodb.card(card_id, is_id_internal=True)
+    for card_id, card in cards:
         stats = card_to_stats(card, unseen_compat=True)
         stats['marked'] = len([tag.name for tag in card.tags
                                         if tag.name == marked_tag]) != 0
@@ -708,20 +726,14 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
         except KeyError: inverse_id = None
         except IndexError: inverse_id = None
 
-        tags = [t.name for t in card.tags
-                       if t.name != marked_tag and t.name != "__UNTAGGED__"]
-        try:
-            category = tags[0]
-        except IndexError:
-            category = 'None'
-
         if exporter.with_default_styles:
+            tags = [tag.replace(' ', '_') for tag in card_tags[card_id]]
             tags.append(card.card_type.name.replace(' ', '_'))
             classes = " ".join(tags)
             q = '<div id="q" class="%s"><div>%s' % (classes, q) # closed in mobile client
             a = '<div id="a" class="%s"><div>%s' % (classes, a) # closed in mobile client
 
-        exporter.write(str(card_id), q, a, category, stats,
+        exporter.write(str(card_id), q, a, card_tags[card_id][0], stats,
                        str(inverse_id), is_overlay)
 
         if (progress_bar and (count % 50 == 0)):
