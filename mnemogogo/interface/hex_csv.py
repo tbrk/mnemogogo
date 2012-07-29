@@ -389,7 +389,7 @@ class JojoHexCsv(mnemogogo.Interface):
     ext = 'PNG'
 
     description = ('Mnemojojo (J2ME)')
-    version = '1.0.0'
+    version = '2.0.0'
 
     def start_export(self, sync_path, debug):
         e = JojoExport(self, sync_path, debug)
@@ -406,7 +406,7 @@ class DodoHexCsv(mnemogogo.Interface):
     ext = 'PNG'
 
     description = ('Mnemododo (Android)')
-    version = '1.0.0'
+    version = '2.0.0'
 
     def start_export(self, sync_path, debug):
         e = JojoExport(self, sync_path, debug)
