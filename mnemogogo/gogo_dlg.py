@@ -143,11 +143,12 @@ class GogoDlg(QDialog):
         self.connect(self.ui.exportButton, SIGNAL("clicked()"), self.doExport)
         self.connect(self.ui.importButton, SIGNAL("clicked()"), self.doImport)
         self.connect(self.ui.browseButton, SIGNAL("clicked()"), self.browse)
-        self.connect(self.ui.doneButton, SIGNAL("clicked()"), self.apply)
+        self.connect(self.ui.doneButton, SIGNAL("clicked()"), self.close)
         self.connect(self.ui.forceMobileButton, SIGNAL("clicked()"),
                      self.forceMobile)
         self.connect(self.ui.forceLocalButton, SIGNAL("clicked()"),
                      self.forceLocal)
+        self.connect(self, SIGNAL("rejected()"), self.writeSettings)
 
     def doExport(self):
         self.writeSettings()
@@ -281,8 +282,4 @@ class GogoDlg(QDialog):
 
         if settings.has_key('max_size'):
             self.ui.maxSize.setValue(settings['max_size'])
-
-    def apply(self):
-        self.writeSettings()
-        self.close()
 
