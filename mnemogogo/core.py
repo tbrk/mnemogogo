@@ -935,7 +935,10 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
         line = log.readline()
         while line != '':
             log_done = log_done + 1
-            log_repetition(mnemodb, line.rstrip('\n'), rep_data, to_user)
+            try:
+                log_repetition(mnemodb, line.rstrip('\n'), rep_data, to_user)
+            except ValueError:
+                logger().log_error("Corrupt log entry: %s" % line.rstrip('\n'))
             line = log.readline()
             if (progress_bar and (log_done % 50 == 0)):
                 progress_bar.setProperty("value",
