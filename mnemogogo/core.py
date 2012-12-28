@@ -26,6 +26,7 @@ import itertools
 import random
 import traceback
 import time, datetime, calendar
+import shutil
 from PyQt4.QtGui import QImage
 
 interface_classes = []
@@ -178,6 +179,7 @@ class Export(Job):
         self.img_max_height = None
         self.img_to_landscape = False
         self.img_to_ext = None
+        self.pass_img_ext = set()
 
         self.with_default_styles = False
 
@@ -300,6 +302,26 @@ class Export(Job):
 
         im.save(dst, dst_ext.upper())
         return (True, dst_file)
+
+    def copy_img(self, src, dst_subdir, dst_file):
+        dst = os.path.join(self.sync_path, dst_subdir, dst_file)
+
+        if not os.path.exists(src):
+            logger().log_warning("image not found: %s" % src)
+            return (False, 'NOTFOUND.PNG')
+
+        if (os.path.exists(dst) and
+                (os.path.getmtime(src) < os.path.getmtime(dst))):
+            return (False, dst_file)
+
+        try:
+            shutil.copyfile(src, dst)
+        except:
+            logger().log_warning("cannot copy %s to %s" % (src, dst))
+            return (False, 'NOTFOUND.PNG')
+
+        return (True, dst_file)
+
     
     def directory_index(self, dir_path):
 
@@ -333,8 +355,13 @@ class Export(Job):
                     name = name + self.directory_index(src_dir)
                 self.img_cnt += 1
 
-                (moved, dst) = self.convert_img(src, dst_subdir, name,
-                        self.img_to_ext)
+                if src_ext.upper() in self.pass_img_ext:
+                    (moved, dst) = self.copy_img(src, dst_subdir,
+                                                 name + src_ext.upper())
+                else:
+                    (moved, dst) = self.convert_img(src, dst_subdir, name,
+                            self.img_to_ext)
+
                 self.debug("gogo:img: moved to %s" % dst)
 
                 self.imgs[src] = phonejoin([dst_subdir, dst])
