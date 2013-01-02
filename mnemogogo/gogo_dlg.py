@@ -163,8 +163,9 @@ class GogoDlg(QDialog):
                 except: pass
 
             if not os.path.exists(self.settings['sync_path']):
-                self.showError(tr("The synchronization path ('%s') is not valid!")
-                                % self.settings['sync_path'])
+                self.showError(tr("The synchronization path ('"
+                                  + self.settings['sync_path']
+                                  + "') is not valid!"))
                 return
 
             self.ui.progressBar.setEnabled(True)
