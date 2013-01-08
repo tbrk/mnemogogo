@@ -419,6 +419,27 @@ class DodoHexCsv(mnemogogo.Interface):
     def start_import(self, sync_path, debug):
         return Import(self, sync_path, debug)
 
+class DodoHexCsvDirectAll(mnemogogo.Interface):
+    ext = 'PNG'
+
+    description = ('Mnemododo (Android with image passthrough)')
+    version = '2.0.0'
+
+    def start_export(self, sync_path, debug):
+        e = JojoExport(self, sync_path, debug)
+        e.img_to_landscape = False
+        e.img_to_ext = self.ext
+        e.pass_img_ext.add('.SVG')
+        e.pass_img_ext.add('.JPG')
+        e.pass_img_ext.add('.PNG')
+        e.pass_img_ext.add('.GIF')
+        e.name_with_numbers = False
+        e.with_default_styles = True
+        return e
+
+    def start_import(self, sync_path, debug):
+        return Import(self, sync_path, debug)
+
 class DodoHexCsvDirectSVG(mnemogogo.Interface):
     ext = 'PNG'
 
