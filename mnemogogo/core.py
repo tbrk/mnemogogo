@@ -917,7 +917,8 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
         else:
             unmarked_facts.append(card.fact)
 
-        mnemoscheduler.avoid_sister_cards(card)
+        if card.grade >= 2:
+            mnemoscheduler.avoid_sister_cards(card)
         mnemodb.update_card(card, repetition_only=True)
 
         if (progress_bar and (cards_done % 50 == 0)):
