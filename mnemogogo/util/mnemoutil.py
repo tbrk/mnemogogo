@@ -9,8 +9,7 @@
 import os, time, datetime, calendar
 import types
 from optparse import OptionParser
-from mnemosyne.libmnemosyne import Mnemosyne
-from mnemosyne.libmnemosyne.ui_components.review_widget import ReviewWidget
+from mnemosyne.script import Mnemosyne
 
 version = "0.5.0"
 
@@ -18,10 +17,6 @@ HOUR = 60 * 60  # Seconds in an hour.
 DAY = 24 * HOUR # Seconds in a day.
 
 config = None
-
-class ReviewWdgt(ReviewWidget):
-    def redraw_now(self):
-        pass
 
 def midnight_UTC(timestamp):        
     date_only = datetime.date.fromtimestamp(timestamp).timetuple()
@@ -61,6 +56,7 @@ def show_info(ms):
     print "data_dir: %s" % ms.config().data_dir
 
     counters = ms.review_controller().counters()
+    print counters # XXX
     print "scheduled: %d; not memorised: %d; active: %d" % counters
 
 learning_data = [
@@ -188,7 +184,7 @@ def main():
 
     # Start a session
 
-    ms = Mnemosyne(False, True)
+    ms = Mnemosyne(data_dir)
     ms.activate_saved_plugins = types.MethodType(ignore_method, ms)
 
     ms.components.insert(0,
@@ -199,9 +195,6 @@ def main():
             (__name__, "ReviewWdgt")
         ]:
         ms.components.append(c)
-
-    ms.initialise(data_dir, filename, automatic_upgrades=False)
-    ms.review_controller().reset()
 
     db = ms.database()
     config = ms.config()
