@@ -2,7 +2,6 @@ FORMS = gogo_frm.ui
 
 SOURCES = \
     ../mnemogogo_plugin.py \
-    ../gogorender.py       \
     gogo_dlg.py
 
 TRANSLATIONS = \

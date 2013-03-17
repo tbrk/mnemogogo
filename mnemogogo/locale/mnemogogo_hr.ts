@@ -3,37 +3,32 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="238"/>
+        <location filename="../mnemogogo_plugin.py" line="241"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_dlg.py" line="225"/>
+        <location filename="gogo_dlg.py" line="231"/>
         <source>Select synchronization path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_dlg.py" line="154"/>
+        <location filename="gogo_dlg.py" line="157"/>
         <source>A synchronization path must be set first!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_dlg.py" line="163"/>
-        <source>The synchronization path (&apos;%s&apos;) is not valid!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="gogo_dlg.py" line="184"/>
+        <location filename="gogo_dlg.py" line="189"/>
         <source>Messages were written to gogolog.txt in the Mnemosyne home directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_dlg.py" line="210"/>
+        <location filename="gogo_dlg.py" line="216"/>
         <source>Messages were written to log.txt in the Mnemosyne home directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_dlg.py" line="257"/>
+        <location filename="gogo_dlg.py" line="265"/>
         <source>The interface &apos;%s&apos; is not currently available. Please select another.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -43,28 +38,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="116"/>
+        <location filename="../mnemogogo_plugin.py" line="119"/>
         <source>Mobile reviewing is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="117"/>
+        <location filename="../mnemogogo_plugin.py" line="120"/>
         <source>Choose Mnemogogo from the Cards menu for options.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="138"/>
+        <location filename="../mnemogogo_plugin.py" line="141"/>
         <source>Mnemogogo message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="200"/>
+        <location filename="../mnemogogo_plugin.py" line="203"/>
         <source>Please use the 2.x versions of Mnemododo/jojo 
 for full compatibility with Mnemosyne&apos;s new synchronisation protocol.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="222"/>
+        <location filename="../mnemogogo_plugin.py" line="225"/>
         <source>Missing state. Mnemogogo could not 
 determine whether it should be in local or mobile mode. Please use the 
 &apos;Force to Mobile&apos; and &apos;Force to Local&apos; buttons to establish the correct 
@@ -72,49 +67,24 @@ state.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="288"/>
+        <location filename="../mnemogogo_plugin.py" line="291"/>
         <source>Incorrect installation. Missing %s directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="294"/>
+        <location filename="../mnemogogo_plugin.py" line="297"/>
         <source>Incorrect installation. The mnemogogo 
 module could not be imported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="311"/>
+        <location filename="../mnemogogo_plugin.py" line="314"/>
         <source>Transfer cards to and from your mobile device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gogorender.py" line="100"/>
-        <source>Treat these characters normally:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="105"/>
-        <source>Render entire lines right-to-left for these tags:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="112"/>
-        <source>Maximum line width (pixels):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="117"/>
-        <source>Render with transparency:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="121"/>
-        <source>Render in Mnemosyne (for testing):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gogorender.py" line="480"/>
-        <source>Render words as image files on Mnemogogo export.</source>
+        <location filename="gogo_dlg.py" line="166"/>
+        <source>The synchronization path (&apos;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -158,6 +128,11 @@ module could not be imported.</source>
     <message>
         <location filename="gogo_dlg.py" line="55"/>
         <source>Too few fields in stats.csv: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gogo_dlg.py" line="57"/>
+        <source>Import failed: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -266,17 +241,5 @@ p, li { white-space: pre-wrap; }
         <source>Alt+D</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>GogorenderConfigWdgt</name>
-</context>
-<context>
-    <name>GogorenderPlugin</name>
-</context>
-<context>
-    <name>MnemogogoPlugin</name>
-</context>
-<context>
-    <name>MnemogogoReviewWdgt</name>
 </context>
 </TS>
