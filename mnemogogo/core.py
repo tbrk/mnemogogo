@@ -908,11 +908,13 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
     cards_total = len(new_stats) 
     for (card, stats) in new_stats:
         cards_done = cards_done + 1
-        if stats['unseen']: continue
+        marked = ('marked' in stats) and (stats['marked'])
+
+        if stats['unseen'] and not marked: continue
 
         stats_to_card(stats, card, day_starts_at)
 
-        if ('marked' in stats) and (stats['marked']):
+        if marked:
             marked_facts.append(card.fact)
         else:
             unmarked_facts.append(card.fact)
