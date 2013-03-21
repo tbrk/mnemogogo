@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'gogo_frm.ui'
 #
-# Created: Wed Dec 28 13:46:01 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Thu Mar 21 15:15:36 2013
+#      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -37,11 +37,6 @@ class Ui_GogoFrm(object):
         spacerItem1 = QtGui.QSpacerItem(31, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
         self.localLabel = QtGui.QLabel(self.localFrame)
-        self.localLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Local</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.localLabel.setObjectName(_fromUtf8("localLabel"))
         self.gridLayout.addWidget(self.localLabel, 1, 1, 1, 1)
         spacerItem2 = QtGui.QSpacerItem(32, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -61,11 +56,6 @@ class Ui_GogoFrm(object):
         spacerItem5 = QtGui.QSpacerItem(29, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout_2.addItem(spacerItem5, 1, 0, 1, 1)
         self.mobileLabel = QtGui.QLabel(self.mobileFrame)
-        self.mobileLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Mobile</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.mobileLabel.setObjectName(_fromUtf8("mobileLabel"))
         self.gridLayout_2.addWidget(self.mobileLabel, 1, 1, 1, 1)
         spacerItem6 = QtGui.QSpacerItem(29, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -81,7 +71,6 @@ class Ui_GogoFrm(object):
         spacerItem8 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem8)
         self.exportButton = QtGui.QPushButton(self.layoutWidget)
-        self.exportButton.setText(QtGui.QApplication.translate("GogoFrm", "&Export >>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportButton.setObjectName(_fromUtf8("exportButton"))
         self.verticalLayout.addWidget(self.exportButton)
         spacerItem9 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -92,13 +81,11 @@ class Ui_GogoFrm(object):
         self.progressBar.setAlignment(QtCore.Qt.AlignCenter)
         self.progressBar.setTextVisible(False)
         self.progressBar.setInvertedAppearance(False)
-        self.progressBar.setFormat(QtGui.QApplication.translate("GogoFrm", "%p%", None, QtGui.QApplication.UnicodeUTF8))
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.verticalLayout.addWidget(self.progressBar)
         spacerItem10 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem10)
         self.importButton = QtGui.QPushButton(self.layoutWidget)
-        self.importButton.setText(QtGui.QApplication.translate("GogoFrm", "<< &Import", None, QtGui.QApplication.UnicodeUTF8))
         self.importButton.setObjectName(_fromUtf8("importButton"))
         self.verticalLayout.addWidget(self.importButton)
         spacerItem11 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -108,15 +95,12 @@ class Ui_GogoFrm(object):
         self.optionsTab.setObjectName(_fromUtf8("optionsTab"))
         self.label_3 = QtGui.QLabel(self.optionsTab)
         self.label_3.setGeometry(QtCore.QRect(10, 11, 181, 24))
-        self.label_3.setText(QtGui.QApplication.translate("GogoFrm", "Number of days to export:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.label_4 = QtGui.QLabel(self.optionsTab)
         self.label_4.setGeometry(QtCore.QRect(10, 41, 175, 33))
-        self.label_4.setText(QtGui.QApplication.translate("GogoFrm", "Synchronisation path:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.label_5 = QtGui.QLabel(self.optionsTab)
         self.label_5.setGeometry(QtCore.QRect(10, 80, 175, 24))
-        self.label_5.setText(QtGui.QApplication.translate("GogoFrm", "Interface:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.interfaceList = QtGui.QComboBox(self.optionsTab)
         self.interfaceList.setGeometry(QtCore.QRect(192, 80, 343, 24))
@@ -126,22 +110,18 @@ class Ui_GogoFrm(object):
         self.syncPath.setObjectName(_fromUtf8("syncPath"))
         self.browseButton = QtGui.QPushButton(self.optionsTab)
         self.browseButton.setGeometry(QtCore.QRect(449, 41, 86, 33))
-        self.browseButton.setText(QtGui.QApplication.translate("GogoFrm", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.browseButton.setObjectName(_fromUtf8("browseButton"))
         self.daysToExport = QtGui.QSpinBox(self.optionsTab)
         self.daysToExport.setGeometry(QtCore.QRect(192, 11, 46, 24))
         self.daysToExport.setObjectName(_fromUtf8("daysToExport"))
         self.forceMobileButton = QtGui.QPushButton(self.optionsTab)
         self.forceMobileButton.setGeometry(QtCore.QRect(11, 196, 119, 33))
-        self.forceMobileButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Mobile", None, QtGui.QApplication.UnicodeUTF8))
         self.forceMobileButton.setObjectName(_fromUtf8("forceMobileButton"))
         self.forceLocalButton = QtGui.QPushButton(self.optionsTab)
         self.forceLocalButton.setGeometry(QtCore.QRect(11, 235, 119, 33))
-        self.forceLocalButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Local", None, QtGui.QApplication.UnicodeUTF8))
         self.forceLocalButton.setObjectName(_fromUtf8("forceLocalButton"))
         self.groupBox = QtGui.QGroupBox(self.optionsTab)
         self.groupBox.setGeometry(QtCore.QRect(270, 130, 276, 118))
-        self.groupBox.setTitle(QtGui.QApplication.translate("GogoFrm", "Exported image limits", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.maxSize = QtGui.QSpinBox(self.groupBox)
         self.maxSize.setGeometry(QtCore.QRect(95, 84, 72, 24))
@@ -152,26 +132,25 @@ class Ui_GogoFrm(object):
         self.maxHeight = QtGui.QSpinBox(self.groupBox)
         self.maxHeight.setGeometry(QtCore.QRect(95, 55, 72, 24))
         self.maxHeight.setMinimum(32)
-        self.maxHeight.setMaximum(1024)
+        self.maxHeight.setMaximum(4096)
+        self.maxHeight.setSingleStep(100)
         self.maxHeight.setProperty("value", 300)
         self.maxHeight.setObjectName(_fromUtf8("maxHeight"))
         self.maxWidth = QtGui.QSpinBox(self.groupBox)
         self.maxWidth.setGeometry(QtCore.QRect(95, 25, 72, 24))
         self.maxWidth.setMinimum(32)
-        self.maxWidth.setMaximum(1024)
+        self.maxWidth.setMaximum(4096)
+        self.maxWidth.setSingleStep(100)
         self.maxWidth.setProperty("value", 240)
         self.maxWidth.setObjectName(_fromUtf8("maxWidth"))
         self.maxSize_label = QtGui.QLabel(self.groupBox)
         self.maxSize_label.setGeometry(QtCore.QRect(17, 84, 67, 17))
-        self.maxSize_label.setText(QtGui.QApplication.translate("GogoFrm", "Size (Kb):", None, QtGui.QApplication.UnicodeUTF8))
         self.maxSize_label.setObjectName(_fromUtf8("maxSize_label"))
         self.maxHeight_label = QtGui.QLabel(self.groupBox)
         self.maxHeight_label.setGeometry(QtCore.QRect(17, 55, 67, 17))
-        self.maxHeight_label.setText(QtGui.QApplication.translate("GogoFrm", "Height:", None, QtGui.QApplication.UnicodeUTF8))
         self.maxHeight_label.setObjectName(_fromUtf8("maxHeight_label"))
         self.maxWidth_label = QtGui.QLabel(self.groupBox)
         self.maxWidth_label.setGeometry(QtCore.QRect(17, 25, 67, 17))
-        self.maxWidth_label.setText(QtGui.QApplication.translate("GogoFrm", "Width:", None, QtGui.QApplication.UnicodeUTF8))
         self.maxWidth_label.setObjectName(_fromUtf8("maxWidth_label"))
         self.tabWidget.addTab(self.optionsTab, _fromUtf8(""))
         self.horizontalLayoutWidget = QtGui.QWidget(GogoFrm)
@@ -183,13 +162,11 @@ class Ui_GogoFrm(object):
         spacerItem12 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem12)
         self.doneButton = QtGui.QPushButton(self.horizontalLayoutWidget)
-        self.doneButton.setText(QtGui.QApplication.translate("GogoFrm", "&Done", None, QtGui.QApplication.UnicodeUTF8))
-        self.doneButton.setShortcut(QtGui.QApplication.translate("GogoFrm", "Alt+D", None, QtGui.QApplication.UnicodeUTF8))
         self.doneButton.setObjectName(_fromUtf8("doneButton"))
         self.horizontalLayout.addWidget(self.doneButton)
 
         self.retranslateUi(GogoFrm)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(GogoFrm)
         GogoFrm.setTabOrder(self.exportButton, self.importButton)
         GogoFrm.setTabOrder(self.importButton, self.doneButton)
@@ -205,6 +182,31 @@ class Ui_GogoFrm(object):
         GogoFrm.setTabOrder(self.forceMobileButton, self.forceLocalButton)
 
     def retranslateUi(self, GogoFrm):
+        self.localLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Local</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.mobileLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Mobile</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.exportButton.setText(QtGui.QApplication.translate("GogoFrm", "&Export >>", None, QtGui.QApplication.UnicodeUTF8))
+        self.progressBar.setFormat(QtGui.QApplication.translate("GogoFrm", "%p%", None, QtGui.QApplication.UnicodeUTF8))
+        self.importButton.setText(QtGui.QApplication.translate("GogoFrm", "<< &Import", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.synchronizeTab), QtGui.QApplication.translate("GogoFrm", "Synchronize", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("GogoFrm", "Number of days to export:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("GogoFrm", "Synchronisation path:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("GogoFrm", "Interface:", None, QtGui.QApplication.UnicodeUTF8))
+        self.browseButton.setText(QtGui.QApplication.translate("GogoFrm", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.forceMobileButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Mobile", None, QtGui.QApplication.UnicodeUTF8))
+        self.forceLocalButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Local", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox.setTitle(QtGui.QApplication.translate("GogoFrm", "Exported image limits", None, QtGui.QApplication.UnicodeUTF8))
+        self.maxSize_label.setText(QtGui.QApplication.translate("GogoFrm", "Size (Kb):", None, QtGui.QApplication.UnicodeUTF8))
+        self.maxHeight_label.setText(QtGui.QApplication.translate("GogoFrm", "Height:", None, QtGui.QApplication.UnicodeUTF8))
+        self.maxWidth_label.setText(QtGui.QApplication.translate("GogoFrm", "Width:", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.optionsTab), QtGui.QApplication.translate("GogoFrm", "Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.doneButton.setText(QtGui.QApplication.translate("GogoFrm", "&Done", None, QtGui.QApplication.UnicodeUTF8))
+        self.doneButton.setShortcut(QtGui.QApplication.translate("GogoFrm", "Alt+D", None, QtGui.QApplication.UnicodeUTF8))
 

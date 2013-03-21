@@ -84,7 +84,12 @@ module could not be imported.</source>
     </message>
     <message>
         <location filename="gogo_dlg.py" line="166"/>
-        <source>The synchronization path (&apos;</source>
+        <source>The synchronization path </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gogo_dlg.py" line="166"/>
+        <source> is not valid!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -217,27 +222,27 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_frm.ui" line="492"/>
+        <location filename="gogo_frm.ui" line="498"/>
         <source>Size (Kb):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_frm.ui" line="505"/>
+        <location filename="gogo_frm.ui" line="511"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_frm.ui" line="518"/>
+        <location filename="gogo_frm.ui" line="524"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_frm.ui" line="560"/>
+        <location filename="gogo_frm.ui" line="566"/>
         <source>&amp;Done</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gogo_frm.ui" line="563"/>
+        <location filename="gogo_frm.ui" line="569"/>
         <source>Alt+D</source>
         <translation type="unfinished"></translation>
     </message>

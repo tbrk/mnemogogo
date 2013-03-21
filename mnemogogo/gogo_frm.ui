@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="synchronizeTab">
     <attribute name="title">
@@ -454,7 +454,10 @@ p, li { white-space: pre-wrap; }
        <number>32</number>
       </property>
       <property name="maximum">
-       <number>1024</number>
+       <number>4096</number>
+      </property>
+      <property name="singleStep">
+       <number>100</number>
       </property>
       <property name="value">
        <number>300</number>
@@ -473,7 +476,10 @@ p, li { white-space: pre-wrap; }
        <number>32</number>
       </property>
       <property name="maximum">
-       <number>1024</number>
+       <number>4096</number>
+      </property>
+      <property name="singleStep">
+       <number>100</number>
       </property>
       <property name="value">
        <number>240</number>
