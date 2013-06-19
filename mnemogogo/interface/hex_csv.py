@@ -232,7 +232,11 @@ class Import(mnemogogo.Import):
             line = prelog.readline()
 
         prelog.close()
-        remove(prelog_path)
+        try:
+            remove(prelog_path)
+        except Exception, e:
+            mnemogogo.logger().log_warning("could not delete: %s (%s)" %
+                    (prelog_path, str(e)))
 
         postlog.close()
 
