@@ -987,11 +987,11 @@ def do_import(interface, sync_path, mnemodb, mnemoconfig, mnemoscheduler,
 
 def get_database(config):
     try:
-        mempath =  config["path"]
+        mempath =  config["last_database"]
     except KeyError:
-        mempath = "default.mem"
+        mempath = "default.db"
 
-    return mempath[:-4]
+    return mempath[:-3]
 
 def get_config_key(config):
     mempath = get_database(config)

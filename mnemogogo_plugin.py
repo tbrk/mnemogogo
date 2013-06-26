@@ -70,6 +70,17 @@ class MnemogogoConfig(Hook):
     def run(self):
         pass
 
+class MnemogogoAfterLoad(Hook):
+    used_for = "after_load"
+
+    def run(self):
+        for plugin in self.component_manager.all("plugin"):
+            try:
+                if plugin.name == 'Mnemogogo':
+                    plugin.reset_config()
+            except:
+                pass
+
 class MnemogogoRenderer(Renderer):
     used_for = None  # All card types.
 
@@ -162,7 +173,8 @@ class MnemogogoPlugin(Plugin):
     name = name
     description = description
 
-    components = [MnemogogoConfig, MnemogogoRenderChain, MnemogogoReviewWdgt]
+    components = [MnemogogoConfig, MnemogogoRenderChain, MnemogogoReviewWdgt,
+                  MnemogogoAfterLoad]
 
     is_locked = False
     config_key = "mnemogogo"
@@ -323,6 +335,13 @@ module could not be imported.") + "\n\n(" + mnemogogo_imported_error + ")")
         except:
             pass
 
+        self.load_config()
+        if self.settings['mode'] == 'mobile':
+            self.lock()
+        else:
+            self.unlock()
+
+    def reset_config(self):
         self.load_config()
         if self.settings['mode'] == 'mobile':
             self.lock()
