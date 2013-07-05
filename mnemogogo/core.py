@@ -685,6 +685,7 @@ def make_tag_map(cards):
         if len(tags) == 0:
             tagmap[card_id] = ['None']
         else:
+            tags.sort()
             tagmap[card_id] = tags
 
     return tagmap
