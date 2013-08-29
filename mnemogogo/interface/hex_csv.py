@@ -437,6 +437,7 @@ class DodoHexCsvDirectAll(mnemogogo.Interface):
         e.pass_img_ext.add('.JPG')
         e.pass_img_ext.add('.PNG')
         e.pass_img_ext.add('.GIF')
+        e.pass_img_ext.add('.SWF')
         e.name_with_numbers = False
         e.with_default_styles = True
         return e
