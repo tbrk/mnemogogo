@@ -3,7 +3,7 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="241"/>
+        <location filename="../mnemogogo_plugin.py" line="253"/>
         <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -38,28 +38,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="119"/>
+        <location filename="../mnemogogo_plugin.py" line="130"/>
         <source>Mobile reviewing is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="120"/>
+        <location filename="../mnemogogo_plugin.py" line="131"/>
         <source>Choose Mnemogogo from the Cards menu for options.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="141"/>
+        <location filename="../mnemogogo_plugin.py" line="152"/>
         <source>Mnemogogo message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="203"/>
+        <location filename="../mnemogogo_plugin.py" line="215"/>
         <source>Please use the 2.x versions of Mnemododo/jojo 
 for full compatibility with Mnemosyne&apos;s new synchronisation protocol.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="225"/>
+        <location filename="../mnemogogo_plugin.py" line="237"/>
         <source>Missing state. Mnemogogo could not 
 determine whether it should be in local or mobile mode. Please use the 
 &apos;Force to Mobile&apos; and &apos;Force to Local&apos; buttons to establish the correct 
@@ -67,18 +67,18 @@ state.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="291"/>
+        <location filename="../mnemogogo_plugin.py" line="303"/>
         <source>Incorrect installation. Missing %s directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="297"/>
+        <location filename="../mnemogogo_plugin.py" line="309"/>
         <source>Incorrect installation. The mnemogogo 
 module could not be imported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mnemogogo_plugin.py" line="314"/>
+        <location filename="../mnemogogo_plugin.py" line="326"/>
         <source>Transfer cards to and from your mobile device.</source>
         <translation type="unfinished"></translation>
     </message>

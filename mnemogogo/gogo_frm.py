@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'gogo_frm.ui'
 #
-# Created: Thu Mar 21 15:15:36 2013
-#      by: PyQt4 UI code generator 4.9.3
+# Created: Sun Sep  8 10:13:09 2013
+#      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_GogoFrm(object):
     def setupUi(self, GogoFrm):
@@ -166,7 +175,7 @@ class Ui_GogoFrm(object):
         self.horizontalLayout.addWidget(self.doneButton)
 
         self.retranslateUi(GogoFrm)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(GogoFrm)
         GogoFrm.setTabOrder(self.exportButton, self.importButton)
         GogoFrm.setTabOrder(self.importButton, self.doneButton)
@@ -182,31 +191,31 @@ class Ui_GogoFrm(object):
         GogoFrm.setTabOrder(self.forceMobileButton, self.forceLocalButton)
 
     def retranslateUi(self, GogoFrm):
-        self.localLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.localLabel.setText(_translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Local</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.mobileLabel.setText(QtGui.QApplication.translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Local</span></p></body></html>", None))
+        self.mobileLabel.setText(_translate("GogoFrm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\"font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Mobile</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.exportButton.setText(QtGui.QApplication.translate("GogoFrm", "&Export >>", None, QtGui.QApplication.UnicodeUTF8))
-        self.progressBar.setFormat(QtGui.QApplication.translate("GogoFrm", "%p%", None, QtGui.QApplication.UnicodeUTF8))
-        self.importButton.setText(QtGui.QApplication.translate("GogoFrm", "<< &Import", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.synchronizeTab), QtGui.QApplication.translate("GogoFrm", "Synchronize", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("GogoFrm", "Number of days to export:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("GogoFrm", "Synchronisation path:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("GogoFrm", "Interface:", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseButton.setText(QtGui.QApplication.translate("GogoFrm", "&Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.forceMobileButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Mobile", None, QtGui.QApplication.UnicodeUTF8))
-        self.forceLocalButton.setText(QtGui.QApplication.translate("GogoFrm", "Force to Local", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("GogoFrm", "Exported image limits", None, QtGui.QApplication.UnicodeUTF8))
-        self.maxSize_label.setText(QtGui.QApplication.translate("GogoFrm", "Size (Kb):", None, QtGui.QApplication.UnicodeUTF8))
-        self.maxHeight_label.setText(QtGui.QApplication.translate("GogoFrm", "Height:", None, QtGui.QApplication.UnicodeUTF8))
-        self.maxWidth_label.setText(QtGui.QApplication.translate("GogoFrm", "Width:", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.optionsTab), QtGui.QApplication.translate("GogoFrm", "Options", None, QtGui.QApplication.UnicodeUTF8))
-        self.doneButton.setText(QtGui.QApplication.translate("GogoFrm", "&Done", None, QtGui.QApplication.UnicodeUTF8))
-        self.doneButton.setShortcut(QtGui.QApplication.translate("GogoFrm", "Alt+D", None, QtGui.QApplication.UnicodeUTF8))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:xx-large; font-weight:600;\">Mobile</span></p></body></html>", None))
+        self.exportButton.setText(_translate("GogoFrm", "&Export >>", None))
+        self.progressBar.setFormat(_translate("GogoFrm", "%p%", None))
+        self.importButton.setText(_translate("GogoFrm", "<< &Import", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.synchronizeTab), _translate("GogoFrm", "Synchronize", None))
+        self.label_3.setText(_translate("GogoFrm", "Number of days to export:", None))
+        self.label_4.setText(_translate("GogoFrm", "Synchronisation path:", None))
+        self.label_5.setText(_translate("GogoFrm", "Interface:", None))
+        self.browseButton.setText(_translate("GogoFrm", "&Browse", None))
+        self.forceMobileButton.setText(_translate("GogoFrm", "Force to Mobile", None))
+        self.forceLocalButton.setText(_translate("GogoFrm", "Force to Local", None))
+        self.groupBox.setTitle(_translate("GogoFrm", "Exported image limits", None))
+        self.maxSize_label.setText(_translate("GogoFrm", "Size (Kb):", None))
+        self.maxHeight_label.setText(_translate("GogoFrm", "Height:", None))
+        self.maxWidth_label.setText(_translate("GogoFrm", "Width:", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.optionsTab), _translate("GogoFrm", "Options", None))
+        self.doneButton.setText(_translate("GogoFrm", "&Done", None))
+        self.doneButton.setShortcut(_translate("GogoFrm", "Alt+D", None))
 
