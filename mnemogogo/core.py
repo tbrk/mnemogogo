@@ -734,7 +734,7 @@ def do_export(interface, num_days, sync_path, mnemodb, mnemoconfig, card_types,
     total = len(cards)
     current = 0
 
-    exporter.open(datetime.date.fromtimestamp(0), num_days, total, params)
+    exporter.open(datetime.date(1970, 1, 1), num_days, total, params)
     exporter.id_to_serial = dict(zip((str(i) for i in card_ids),
                                  range(0, total)))
     exporter.write_config(config)
