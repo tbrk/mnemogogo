@@ -25,5 +25,6 @@ public interface Logger
     public static final int ERR  = 30;
 
     public void log(int level, String cat, String msg);
+    public void close();
 }
 
